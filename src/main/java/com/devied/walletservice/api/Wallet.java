@@ -20,13 +20,14 @@ public class Wallet {
     ProductDataRepository productDataRepository;
 
     @GetMapping(path ="/wallet", produces = "application/Json")
-    public User getWallet(){
+    public User getWallet() throws Exception{
         String id = "123";
-        UserData userData = userDataRepository.findById(id).orElse(null);
+        UserData userData = userDataRepository.findById(id).orElseThrow( () -> new Exception("No User Found"));
         User user = new User();
         user.setEmail(userData.getEmail());
         user.setBoughtToken(userData.getBoughtToken());
         user.setEarnedToken(userData.getEarnedToken());
-        return null;
+
+        return user;
     }
 }
