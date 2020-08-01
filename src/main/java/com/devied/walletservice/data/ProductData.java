@@ -10,9 +10,7 @@ public class ProductData {
     private int tokens;
     private double amount;
 
-    public ProductData(int tokens, double amount ) {
-        this.tokens = tokens;
-        this.amount = amount;
+    public ProductData() {
     }
     public String getId() {
         return id;

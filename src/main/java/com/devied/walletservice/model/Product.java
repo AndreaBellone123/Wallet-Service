@@ -1,23 +1,12 @@
 package com.devied.walletservice.model;
 
 public class Product {
-    private String id;
     private String name;
     private double discount;
     private int tokens;
     private double amount;
 
-    public Product(int tokens, double amount ) {
-        this.tokens = tokens;
-        this.amount = amount;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public Product() {
     }
 
     public String getName() {
