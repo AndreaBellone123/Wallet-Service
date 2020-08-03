@@ -1,0 +1,14 @@
+# SPRING
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost/wallet
+
+# IDENTITY
+keycloak:
+  # `auth-server-url` must exactly match the issuer of the token
+  auth-server-url: ${SERVICES_ACCOUNT_PUBLIC_URL:https://account.devied.com}${SERVICES_ACCOUNT_PATH:/auth}
+  realm: ${SERVICES_ACCOUNT_REALM:devied}
+  resource: ${SERVICES_ACCOUNT_CLIENT:wallet}
+  bearer-only: ${SERVICES_ACCOUNT_BEARER:true}
+  principal-attribute: ${SERVICES_ACCOUNT_PRINCIPAL_ATTRIBUTE:preferred_username}
