@@ -33,7 +33,7 @@ public class Wallets {
         user.setEarnedTokens(userData.getEarnedTokens());
         user.setAdmin(userData.isAdmin());
         var headers = new HttpHeaders();
-        headers.add("Funds currently available on your account", "Wallet Controller");
+        headers.add("Funds currently available on your account", "Wallets Controller");
         return ResponseEntity.accepted().headers(headers).body(user);
     }
 
@@ -54,7 +54,7 @@ public class Wallets {
             user.setAvailableFunds(userData.getAvailableFunds());
             user.setEmail(auth.getName());
             var headers = new HttpHeaders();
-            headers.add("Tokens bought successfully", "Wallet Controller");
+            headers.add("Tokens bought successfully", "Wallets Controller");
             return ResponseEntity.accepted().headers(headers).body(user);
         }
         return null;
