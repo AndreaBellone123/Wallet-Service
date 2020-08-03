@@ -2,6 +2,7 @@ package com.devied.walletservice.api;
 
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
+import com.devied.walletservice.identity.IdentityRole;
 import com.devied.walletservice.model.Product;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.repository.ProductDataRepository;
@@ -9,6 +10,8 @@ import com.devied.walletservice.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
@@ -21,12 +24,13 @@ public class Wallet {
     @Autowired
     ProductDataRepository productDataRepository;
 
-    @GetMapping(path = "/getWallet/{id}", produces = "application/json")
-    public ResponseEntity<User> getWallet(@PathVariable(value = "id") String id) throws Exception {
+    @GetMapping(produces = "application/json")
+    @Secured(IdentityRole.AUTHORITY_USER)
+    public ResponseEntity<User> getWallet(Authentication auth)  {
 
-        UserData userData = userDataRepository.findById(id).orElseThrow(() -> new Exception("No Users Found"));
+        UserData userData = userDataRepository.findByEmail(auth.getName());
         User user = new User();
-        user.setEmail(userData.getEmail());
+        user.setEmail(auth.getName());
         user.setBoughtTokens(userData.getBoughtTokens());
         user.setEarnedTokens(userData.getEarnedTokens());
         user.setAdmin(userData.isAdmin());
@@ -36,6 +40,7 @@ public class Wallet {
     }
 
     @GetMapping(path = "/products", produces = "application/json")
+    @Secured(IdentityRole.AUTHORITY_USER)
     public ResponseEntity<ArrayList<Product>> getProducts() {
 
         ArrayList<ProductData> listaProductsData = (ArrayList<ProductData>) productDataRepository.findAll();
@@ -57,16 +62,12 @@ public class Wallet {
     }
 
     @PostMapping(path = "/products/{uid}", produces = "application/json", consumes = "application/json")
+    @Secured(IdentityRole.AUTHORITY_ADMIN)
     public ResponseEntity<Product> addProduct(@PathVariable(value = "uid") String uid, @RequestBody ProductData productData) throws Exception {
 
         ProductData productData1 = new ProductData(productData.getName(), productData.getTokens(), productData.getDiscount(), productData.getPrice());
         UserData userData = userDataRepository.findById(uid).orElseThrow(() -> new Exception("No Users Found"));
 
-        if(!userData.isAdmin()) {
-
-            return null;
-
-        } else {
 
             productDataRepository.insert(productData1);
             Product product = new Product();
@@ -79,22 +80,15 @@ public class Wallet {
             headers.add("Product Added", "Wallet Controller");
 
             return ResponseEntity.accepted().headers(headers).body(product);
-        }
+
     }
 
     @PutMapping("/updateProduct/{uid}/{pid}")
+    @Secured(IdentityRole.AUTHORITY_ADMIN)
     public ResponseEntity<ProductData> updateProduct(@PathVariable(value = "uid") String uid,@PathVariable(value = "pid") String pid, @RequestBody ProductData productData) throws Exception {
 
         UserData userData = userDataRepository.findById(uid).orElseThrow(() -> new Exception("No Users Found"));
         ProductData productData1 = productDataRepository.findById(pid).orElseThrow(() -> new Exception("No Products Found"));
-
-        if(!userData.isAdmin()) {
-
-            return null;
-
-        }
-
-        else {
 
             productData1.setDiscount(productData.getDiscount());
             productData1.setName(productData.getName());
@@ -104,8 +98,6 @@ public class Wallet {
             var headers = new HttpHeaders();
             headers.add("Product Updated", "Wallet Controller");
             return ResponseEntity.accepted().headers(headers).body(updatedProductData);
-        }
-
     }
 
 //    @DeleteMapping(path = "/delProduct/{uid}/{pid}")
@@ -132,17 +124,10 @@ public class Wallet {
 //    }
 
     @DeleteMapping("/deleteProduct/{id}")
-    public ResponseEntity<Product> deleteProduct(@PathVariable(value = "id") String id,@RequestBody String uid) throws Exception {
+    @Secured(IdentityRole.AUTHORITY_ADMIN)
+    public ResponseEntity<Product> deleteProduct(@PathVariable(value = "id") String id) throws Exception {
 
         ProductData productData1 = productDataRepository.findById(id).orElseThrow(() -> new Exception("No Products Found"));
-        UserData userData = userDataRepository.findById(uid).orElseThrow(() -> new Exception("No Users Found"));
-
-        if(!userData.isAdmin()){
-            return null;
-        }
-
-        else {
-
             Product product = new Product();
             product.setTokens(productData1.getTokens());
             product.setName(productData1.getName());
@@ -152,13 +137,14 @@ public class Wallet {
             var headers = new HttpHeaders();
             headers.add("Product Deleted", "Wallet Controller");
             return ResponseEntity.accepted().headers(headers).body(product);
-        }
+
     }
 
-    @PutMapping("/buyProduct/{id}/{pid}")
-    public ResponseEntity<User> buyProduct(@PathVariable(value = "id") String id ,@PathVariable(value = "pid")String pid) throws Exception{
+    @PutMapping("/buyProduct/{pid}")
+    @Secured(IdentityRole.AUTHORITY_USER)
+    public ResponseEntity<User> buyProduct(@PathVariable(value = "pid")String pid,Authentication auth) throws Exception{
 
-        UserData userData = userDataRepository.findById(id).orElseThrow(() -> new Exception("No Users Found"));
+        UserData userData = userDataRepository.findByEmail(auth.getName());
         ProductData productData1 = productDataRepository.findById(pid).orElseThrow(() -> new Exception("No Products Found"));
 
         if(userData.getAvailableFunds() >= productData1.getPrice()) {
@@ -169,7 +155,7 @@ public class Wallet {
             user.setBoughtTokens(userData.getBoughtTokens());
             user.setEarnedTokens(userData.getEarnedTokens());
             user.setAvailableFunds(userData.getAvailableFunds());
-            user.setEmail(userData.getEmail());
+            user.setEmail(auth.getName());
             var headers = new HttpHeaders();
             headers.add("Tokens bought successfully", "Wallet Controller");
             return ResponseEntity.accepted().headers(headers).body(user);
