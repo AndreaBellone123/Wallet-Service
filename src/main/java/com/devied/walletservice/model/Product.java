@@ -1,12 +1,27 @@
 package com.devied.walletservice.model;
 
 public class Product {
+    private String id;
     private String name;
     private double discount;
     private int tokens;
-    private double amount;
+    private double price;
+
+    public Product(int tokens, double price ) {
+        this.tokens = tokens;
+        this.price = price;
+    }
 
     public Product() {
+
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -33,11 +48,11 @@ public class Product {
         this.tokens = tokens;
     }
 
-    public double getAmount() {
-        return amount;
+    public double getPrice() {
+        return price;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

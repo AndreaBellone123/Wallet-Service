@@ -3,16 +3,17 @@ package com.devied.walletservice.data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
-@Document("users")
+@Document("Users")
 public class UserData {
     @Id
     private String id;
     private String email;
-    private int earnedToken;
-    private int boughtToken;
+    private int earnedTokens;
+    private int boughtTokens;
+    private boolean isAdmin;
+    private double availableFunds;
 
-    public UserData() {
+    public UserData(String email) {
         this.email = email;
     }
 
@@ -32,19 +33,34 @@ public class UserData {
         this.email = email;
     }
 
-    public int getEarnedToken() {
-        return earnedToken;
+    public int getEarnedTokens() {
+        return earnedTokens;
     }
 
-    public void setEarnedToken(int earnedToken) {
-        this.earnedToken = earnedToken;
+    public void setEarnedTokens(int earnedTokens) {
+        this.earnedTokens = earnedTokens;
     }
 
-    public int getBoughtToken() {
-        return boughtToken;
+    public int getBoughtTokens() {
+        return boughtTokens;
     }
 
-    public void setBoughtToken(int boughtToken) {
-        this.boughtToken = boughtToken;
+    public void setBoughtTokens(int boughtTokens) {
+        this.boughtTokens = boughtTokens;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public double getAvailableFunds() {
+        return availableFunds;
+    }
+
+    public void setAvailableFunds(double availableFunds) {
+        this.availableFunds = availableFunds;
     }
 }

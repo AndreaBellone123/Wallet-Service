@@ -2,15 +2,20 @@ package com.devied.walletservice.data;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("products")
+@Document("Products")
 public class ProductData {
     private String id;
     private String name;
     private double discount;
     private int tokens;
-    private double amount;
+    private double price;
 
-    public ProductData() {
+    public ProductData(String name,int tokens, double price ,double discount) {
+
+        this.name = name;
+        this.tokens = tokens;
+        this.discount = discount;
+        this.price = price;
     }
     public String getId() {
         return id;
@@ -44,11 +49,11 @@ public class ProductData {
         this.tokens = tokens;
     }
 
-    public double getAmount() {
-        return amount;
+    public double getPrice() {
+        return price;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
