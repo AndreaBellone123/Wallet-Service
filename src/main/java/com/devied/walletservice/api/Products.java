@@ -31,7 +31,7 @@ public class Products {
         product.setDiscount(productData1.getDiscount());
         product.setPrice(productData1.getPrice());
         var headers = new HttpHeaders();
-        headers.add("Product Added", "Wallet Controller");
+        headers.add("Product Added", "Products Controller");
         return ResponseEntity.accepted().headers(headers).body(product);
     }
 
@@ -46,7 +46,7 @@ public class Products {
         productData1.setTokens(productData.getTokens());
         final ProductData updatedProductData = productDataRepository.save(productData1);
         var headers = new HttpHeaders();
-        headers.add("Product Updated", "Wallet Controller");
+        headers.add("Product Updated", "Products Controller");
         return ResponseEntity.accepted().headers(headers).body(updatedProductData);
     }
 
@@ -62,7 +62,7 @@ public class Products {
         product.setPrice(productData1.getPrice());
         productDataRepository.delete(productData1);
         var headers = new HttpHeaders();
-        headers.add("Product Deleted", "Wallet Controller");
+        headers.add("Product Deleted", "Products Controller");
         return ResponseEntity.accepted().headers(headers).body(product);
 
     }
@@ -84,7 +84,7 @@ public class Products {
             listaProducts.add(product);
         }
         var headers = new HttpHeaders();
-        headers.add("List of currently available products", "Wallet Controller");
+        headers.add("List of currently available products", "Products Controller");
         return ResponseEntity.accepted().headers(headers).body(listaProducts);
 
     }
