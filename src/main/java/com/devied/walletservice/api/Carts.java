@@ -25,13 +25,13 @@ public class Carts {
     CartDataRepository cartDataRepository;
 
     @GetMapping("/current")
-    @Secured(IdentityRole.AUTHORITY_USER)
+    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public Cart getCurrentCart(Authentication auth) {
         return cartConverter.convert(cartDataService.findCurrent(auth.getName()));
     }
 
     @PatchMapping("/current")
-    @Secured(IdentityRole.AUTHORITY_USER)
+    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public Cart updateCart(Authentication auth, @RequestBody Cart updatedCart) {
         CartData cartData = cartDataService.findCurrent(auth.getName());
         cartData.setItemsList(updatedCart.getItemsList());
