@@ -23,7 +23,7 @@ public class Wallets {
     ProductDataRepository productDataRepository;
 
     @GetMapping(produces = "application/json")
-    @Secured(IdentityRole.AUTHORITY_USER)
+    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<User> getWallet(Authentication auth)  {
 
         UserData userData = userDataRepository.findByEmail(auth.getName());
@@ -38,7 +38,7 @@ public class Wallets {
     }
 
     @PutMapping(path = "/{pid}")
-    @Secured(IdentityRole.AUTHORITY_USER)
+    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<User> buyProduct(@PathVariable(value = "pid")String pid,Authentication auth) throws Exception{
 
         UserData userData = userDataRepository.findByEmail(auth.getName());

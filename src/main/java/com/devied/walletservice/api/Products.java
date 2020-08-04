@@ -68,7 +68,7 @@ public class Products {
     }
 
     @GetMapping(produces = "application/json")
-    @Secured(IdentityRole.AUTHORITY_USER)
+    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<ArrayList<Product>> getProducts() {
 
         ArrayList<ProductData> listaProductsData = (ArrayList<ProductData>) productDataRepository.findAll();
@@ -81,6 +81,7 @@ public class Products {
             product.setPrice(productData.getPrice());
             product.setDiscount(productData.getDiscount());
             product.setTokens(productData.getTokens());
+            product.setId(productData.getId());
             listaProducts.add(product);
         }
         var headers = new HttpHeaders();
