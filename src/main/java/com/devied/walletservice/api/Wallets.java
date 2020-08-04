@@ -1,5 +1,6 @@
 package com.devied.walletservice.api;
 
+import com.devied.walletservice.converter.UserConverter;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.identity.IdentityRole;
@@ -22,16 +23,15 @@ public class Wallets {
     @Autowired
     ProductDataRepository productDataRepository;
 
+    @Autowired
+    UserConverter userConverter;
+
     @GetMapping(produces = "application/json")
     @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<User> getWallet(Authentication auth)  {
 
         UserData userData = userDataRepository.findByEmail(auth.getName());
-        User user = new User();
-        user.setEmail(auth.getName());
-        user.setBoughtTokens(userData.getBoughtTokens());
-        user.setEarnedTokens(userData.getEarnedTokens());
-        user.setAdmin(userData.isAdmin());
+        User user = userConverter.convert(userData);
         var headers = new HttpHeaders();
         headers.add("Funds currently available on your account", "Wallets Controller");
         return ResponseEntity.accepted().headers(headers).body(user);
@@ -48,11 +48,7 @@ public class Wallets {
             userData.setBoughtTokens(userData.getBoughtTokens() + productData1.getTokens());
             userData.setAvailableFunds(userData.getAvailableFunds() - productData1.getPrice());
             userDataRepository.save(userData);
-            User user = new User();
-            user.setBoughtTokens(userData.getBoughtTokens());
-            user.setEarnedTokens(userData.getEarnedTokens());
-            user.setAvailableFunds(userData.getAvailableFunds());
-            user.setEmail(auth.getName());
+            User user = userConverter.convert(userData);
             var headers = new HttpHeaders();
             headers.add("Tokens bought successfully", "Wallets Controller");
             return ResponseEntity.accepted().headers(headers).body(user);

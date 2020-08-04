@@ -4,20 +4,20 @@ import com.devied.walletservice.model.Item;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-@Document("Carts")
+@Document("carts")
 public class CartData {
 
     @Id
     private String id;
     private double subTotal;
-    private ArrayList<Item> itemsList;
+    private List<Item> itemsList;
     private Date date;
     private String email;
 
-    public CartData(String id, double subTotal, ArrayList<Item> itemsList) {
+    public CartData(String id, double subTotal, List<Item> itemsList) {
         this.id = id;
         this.subTotal = subTotal;
         this.itemsList = itemsList;
@@ -40,11 +40,11 @@ public class CartData {
         this.subTotal = subTotal;
     }
 
-    public ArrayList<Item> getItemsList() {
+    public List<Item> getItemsList() {
         return itemsList;
     }
 
-    public void setItemsList(ArrayList<Item> itemsList) {
+    public void setItemsList(List<Item> itemsList) {
         this.itemsList = itemsList;
     }
 
