@@ -4,14 +4,12 @@ import com.devied.walletservice.converter.CartConverter;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.identity.IdentityRole;
 import com.devied.walletservice.model.Cart;
-import com.devied.walletservice.model.Item;
 import com.devied.walletservice.repository.CartDataRepository;
 import com.devied.walletservice.service.CartDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/carts")
@@ -29,7 +27,6 @@ public class Carts {
     @GetMapping("/current")
     @Secured(IdentityRole.AUTHORITY_USER)
     public Cart getCurrentCart(Authentication auth) {
-
         return cartConverter.convert(cartDataService.findCurrent(auth.getName()));
     }
 
@@ -37,23 +34,8 @@ public class Carts {
     @Secured(IdentityRole.AUTHORITY_USER)
     public Cart updateCart(Authentication auth, @RequestBody Cart updatedCart) {
         CartData cartData = cartDataService.findCurrent(auth.getName());
-        List<Item> itemsList = cartData.getItemsList();
-
-      /*  HashMap<String, Item> itemsMap = new HashMap<String,Item>();
-
-        for (Item i : itemsList) {
-
-            itemsMap.put(i.getId(), i);
-        }
-
-       *//* for (Item i : updatedCart.getItemsList()) {
-            itemsMap.put(i.getId(),i);
-        }
-        cartData.setItemsList(new ArrayList<>(itemsMap.values()));*/
-
         cartData.setItemsList(updatedCart.getItemsList());
         cartDataRepository.save(cartData);
         return cartConverter.convert(cartData);
-
     }
 }
