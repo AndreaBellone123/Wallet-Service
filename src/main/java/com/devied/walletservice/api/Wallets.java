@@ -53,6 +53,15 @@ public class Wallets {
             headers.add("Tokens bought successfully", "Wallets Controller");
             return ResponseEntity.accepted().headers(headers).body(user);
         }
-        return null;
+        else {
+            var headers = new HttpHeaders();
+            headers.add("Insufficient Funds!", "Wallets Controller");
+            User user = new User();
+            user.setBoughtTokens(userData.getBoughtTokens());
+            user.setEarnedTokens(userData.getEarnedTokens());
+            user.setAvailableFunds(userData.getAvailableFunds());
+            user.setEmail(auth.getName());
+            return ResponseEntity.badRequest().headers(headers).body(user);
+        }
     }
 }

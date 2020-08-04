@@ -2,7 +2,11 @@ package com.devied.walletservice.converter;
 
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.model.User;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Service
+@Transactional
 public class UserConverterImpl implements UserConverter {
     @Override
     public User convert(UserData current) {

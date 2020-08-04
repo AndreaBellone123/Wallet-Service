@@ -11,9 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -41,19 +38,22 @@ public class Carts {
     public Cart updateCart(Authentication auth, @RequestBody Cart updatedCart) {
         CartData cartData = cartDataService.findCurrent(auth.getName());
         List<Item> itemsList = cartData.getItemsList();
-        HashMap<String, Item> itemsMap = new HashMap<>();
+
+      /*  HashMap<String, Item> itemsMap = new HashMap<String,Item>();
+
         for (Item i : itemsList) {
 
             itemsMap.put(i.getId(), i);
         }
-        for (Item i : updatedCart.getItemsList()) {
-            itemsMap.put(i.getId(), i);
-        }
-        cartData.setItemsList(new ArrayList<>(itemsMap.values()));
-        cartDataRepository.save(cartData);
 
+       *//* for (Item i : updatedCart.getItemsList()) {
+            itemsMap.put(i.getId(),i);
+        }
+        cartData.setItemsList(new ArrayList<>(itemsMap.values()));*/
+
+        cartData.setItemsList(updatedCart.getItemsList());
+        cartDataRepository.save(cartData);
         return cartConverter.convert(cartData);
 
     }
-
 }
