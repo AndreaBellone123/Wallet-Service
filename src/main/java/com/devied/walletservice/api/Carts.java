@@ -1,7 +1,6 @@
 package com.devied.walletservice.api;
 
 import com.devied.walletservice.converter.CartConverter;
-import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.identity.IdentityRole;
 import com.devied.walletservice.model.Cart;
 import com.devied.walletservice.repository.CartDataRepository;
@@ -25,17 +24,14 @@ public class Carts {
     CartDataRepository cartDataRepository;
 
     @GetMapping("/current")
-    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public Cart getCurrentCart(Authentication auth) {
         return cartConverter.convert(cartDataService.findCurrent(auth.getName()));
     }
 
     @PatchMapping("/current")
-    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public Cart updateCart(Authentication auth, @RequestBody Cart updatedCart) {
-        CartData cartData = cartDataService.findCurrent(auth.getName());
-        cartData.setItemsList(updatedCart.getItemsList());
-        cartDataRepository.save(cartData);
-        return cartConverter.convert(cartData);
+        return cartConverter.convert(cartDataService.patchCurrent(auth.getName(), updatedCart.getItemsList()));
     }
 }

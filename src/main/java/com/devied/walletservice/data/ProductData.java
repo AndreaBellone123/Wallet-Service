@@ -2,7 +2,7 @@ package com.devied.walletservice.data;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("products")
+@Document("Products")
 public class ProductData {
     private String id;
     private String name;

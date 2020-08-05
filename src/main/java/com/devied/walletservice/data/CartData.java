@@ -7,22 +7,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
 
-@Document("carts")
+@Document("Carts")
 public class CartData {
 
     @Id
     private String id;
     private double subTotal;
     private List<Item> itemsList;
-    private Date date;
+    private Date date = new Date();
     private String email;
-
-    public CartData(String id, double subTotal, List<Item> itemsList) {
-        this.id = id;
-        this.subTotal = subTotal;
-        this.itemsList = itemsList;
-        this.date = new Date();
-    }
 
     public String getId() {
         return id;

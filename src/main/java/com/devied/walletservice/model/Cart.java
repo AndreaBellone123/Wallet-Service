@@ -12,12 +12,6 @@ public class Cart {
     private double subTotal;
     private List<Item> itemsList;
 
-    public Cart(String id, double subTotal, List<Item> itemsList) {
-        this.id = id;
-        this.subTotal = subTotal;
-        this.itemsList = itemsList;
-    }
-
     public String getId() {
         return id;
     }

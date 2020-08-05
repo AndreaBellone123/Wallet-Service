@@ -3,7 +3,7 @@ package com.devied.walletservice.data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("users")
+@Document("Users")
 public class UserData {
     @Id
     private String id;

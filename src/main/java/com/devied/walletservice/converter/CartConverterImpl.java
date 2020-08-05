@@ -12,7 +12,9 @@ public class CartConverterImpl implements CartConverter{
     @Override
     public Cart convert(CartData current) {
 
-        Cart cart = new Cart(current.getId(),current.getSubTotal(),current.getItemsList());
+        Cart cart = new Cart();
+        cart.setItemsList(current.getItemsList());
+        cart.setId(current.getId());
         return cart;
     }
 }
