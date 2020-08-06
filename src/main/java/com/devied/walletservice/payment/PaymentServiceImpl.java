@@ -32,8 +32,6 @@ public class PaymentServiceImpl implements PaymentService {
         UserData userData = userDataRepository.findByEmail(email);
 
         payerInfo.setEmail(userData.getEmail());
-        payerInfo.setFirstName("Andrea");
-        payerInfo.setLastName("Bellone");
         payer.setPayerInfo(payerInfo);
 
         return payer;
