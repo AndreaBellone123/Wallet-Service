@@ -3,7 +3,6 @@ package com.devied.walletservice.data;
 import com.devied.walletservice.model.Item;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +11,9 @@ public class CartData {
 
     @Id
     private String id;
-    private double subTotal;
+    private float subtotal;
+    private float tax;
+    private float total;
     private List<Item> itemsList;
     private Date date = new Date();
     private String email;
@@ -25,12 +26,28 @@ public class CartData {
         this.id = id;
     }
 
-    public double getSubTotal() {
-        return subTotal;
+    public String getSubtotal() {
+        return String.format("%.2f", subtotal);
     }
 
-    public void setSubTotal(double subTotal) {
-        this.subTotal = subTotal;
+    public String getTax() {
+        return String.format("%.2f", tax);
+    }
+
+    public String getTotal() {
+        return String.format("%.2f", total);
+    }
+
+    public void setSubtotal(float subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public void setTax(float tax) {
+        this.tax = tax;
+    }
+
+    public void setTotal(float total) {
+        this.total = total;
     }
 
     public List<Item> getItemsList() {

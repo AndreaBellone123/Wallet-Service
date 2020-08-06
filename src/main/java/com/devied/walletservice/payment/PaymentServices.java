@@ -1,8 +1,8 @@
 package com.devied.walletservice.payment;
 
 import java.util.*;
+import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.UserData;
-import com.devied.walletservice.model.OrderDetail;
 import com.devied.walletservice.repository.UserDataRepository;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.*;
@@ -16,10 +16,10 @@ public class PaymentServices {
     @Autowired
     UserDataRepository userDataRepository;
 
-    public String authorizePayment(OrderDetail orderDetail)
+    public String authorizePayment(CartData orderDetail)
             throws PayPalRESTException {
 
-        Payer payer = getPayerInformation();
+        Payer payer = getPayerInformation("andrea.belloneceo@gmail.com");
         RedirectUrls redirectUrls = getRedirectURLs();
         List<Transaction> listTransaction = getTransactionInformation(orderDetail);
 
@@ -40,9 +40,6 @@ public class PaymentServices {
     private Payer getPayerInformation(String email) {
         Payer payer = new Payer();
         payer.setPaymentMethod("paypal");
-
-
-
         PayerInfo payerInfo = new PayerInfo();
         UserData userData = userDataRepository.findByEmail(email);
 
@@ -65,7 +62,7 @@ public class PaymentServices {
 
     }
 
-    private List<Transaction> getTransactionInformation(OrderDetail orderDetail) {
+    private List<Transaction> getTransactionInformation(CartData orderDetail) {
 
         Details details = new Details();
         details.setSubtotal(orderDetail.getSubtotal());
@@ -75,28 +72,22 @@ public class PaymentServices {
         amount.setCurrency("USD");
         amount.setTotal(orderDetail.getTotal());
         amount.setDetails(details);
-
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
-        transaction.setDescription(orderDetail.getProductName());
-
+        transaction.setDescription(orderDetail.getId());
         ItemList itemList = new ItemList();
         List<Item> items = new ArrayList<>();
-
         Item item = new Item();
         item.setCurrency("USD");
-        item.setName(orderDetail.getProductName());
+        item.setName(orderDetail.getId());
         item.setPrice(orderDetail.getSubtotal());
         item.setTax(orderDetail.getTax());
         item.setQuantity("1");
-
         items.add(item);
         itemList.setItems(items);
         transaction.setItemList(itemList);
-
         List<Transaction> listTransaction = new ArrayList<>();
         listTransaction.add(transaction);
-
         return listTransaction;
     }
 
