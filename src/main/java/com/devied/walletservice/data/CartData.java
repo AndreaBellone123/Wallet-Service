@@ -63,10 +63,6 @@ public class CartData {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public String getEmail() {
         return email;
     }
