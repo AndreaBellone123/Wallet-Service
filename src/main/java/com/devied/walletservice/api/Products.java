@@ -4,8 +4,8 @@ import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.identity.IdentityRole;
 import com.devied.walletservice.model.Product;
 import com.devied.walletservice.repository.ProductDataRepository;
+import com.devied.walletservice.service.ProductDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -19,78 +19,34 @@ public class Products {
     @Autowired
     ProductDataRepository productDataRepository;
 
+    @Autowired
+    ProductDataService productDataService;
+
     @PostMapping(produces = "application/json", consumes = "application/json")
     @Secured(IdentityRole.AUTHORITY_ADMIN)
-    public ResponseEntity<Product> addProduct(@RequestBody ProductData productData,Authentication auth) throws Exception {
+    public ResponseEntity<Product> addProduct(@RequestBody ProductData productData, Authentication auth) throws Exception {
 
-        ProductData productData1 = new ProductData();
-        productData1.setName(productData.getName());
-        productData1.setDiscount(productData.getDiscount());
-        productData1.setAmount(productData.getAmount());
-        productData1.setPrice(productData.getPrice());
-        productDataRepository.insert(productData1);
-        Product product = new Product();
-        product.setAmount(productData1.getAmount());
-        product.setName(productData1.getName());
-        product.setDiscount(productData1.getDiscount());
-        product.setPrice(productData1.getPrice());
-        var headers = new HttpHeaders();
-        headers.add("Product Added", "Products Controller");
-        return ResponseEntity.accepted().headers(headers).body(product);
+        return productDataService.addProduct(productData, auth.getName());
     }
 
-    @PutMapping( path = "/{pid}")
+    @PutMapping(path = "/{pid}")
     @Secured(IdentityRole.AUTHORITY_ADMIN)
     public ResponseEntity<ProductData> updateProduct(@PathVariable(value = "pid") String pid, @RequestBody ProductData productData, Authentication auth) throws Exception {
 
-        ProductData productData1 = productDataRepository.findById(pid).orElseThrow(() -> new Exception("No Products Found"));
-        productData1.setDiscount(productData.getDiscount());
-        productData1.setName(productData.getName());
-        productData1.setPrice(productData.getPrice());
-        productData1.setAmount(productData.getAmount());
-        final ProductData updatedProductData = productDataRepository.save(productData1);
-        var headers = new HttpHeaders();
-        headers.add("Product Updated", "Products Controller");
-        return ResponseEntity.accepted().headers(headers).body(updatedProductData);
+        return productDataService.updateProduct(pid, productData, auth.getName());
     }
 
     @DeleteMapping(path = "/{id}")
     @Secured(IdentityRole.AUTHORITY_ADMIN)
     public ResponseEntity<Product> deleteProduct(@PathVariable(value = "id") String id) throws Exception {
 
-        ProductData productData1 = productDataRepository.findById(id).orElseThrow(() -> new Exception("No Products Found"));
-        Product product = new Product();
-        product.setAmount(productData1.getAmount());
-        product.setName(productData1.getName());
-        product.setDiscount(productData1.getDiscount());
-        product.setPrice(productData1.getPrice());
-        productDataRepository.delete(productData1);
-        var headers = new HttpHeaders();
-        headers.add("Product Deleted", "Products Controller");
-        return ResponseEntity.accepted().headers(headers).body(product);
-
+        return productDataService.deleteProduct(id);
     }
 
     @GetMapping(produces = "application/json")
-    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<ArrayList<Product>> getProducts() {
 
-        ArrayList<ProductData> listaProductsData = (ArrayList<ProductData>) productDataRepository.findAll();
-
-        ArrayList<Product> listaProducts = new ArrayList<Product>();
-
-        for (ProductData productData : listaProductsData) {
-            Product product = new Product();
-            product.setName(productData.getName());
-            product.setPrice(productData.getPrice());
-            product.setDiscount(productData.getDiscount());
-            product.setAmount(productData.getAmount());
-            product.setId(productData.getId());
-            listaProducts.add(product);
-        }
-        var headers = new HttpHeaders();
-        headers.add("List of currently available products", "Products Controller");
-        return ResponseEntity.accepted().headers(headers).body(listaProducts);
-
+        return productDataService.getProducts();
     }
 }

@@ -47,7 +47,6 @@ public class Carts {
     public String initialCheckout(Authentication auth) {
 
         CartData cartData = cartDataService.findCurrent(auth.getName());
-
         return paymentService.initialCheckout(auth.getName(), cartData);
     }
 
