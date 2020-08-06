@@ -23,5 +23,5 @@ public interface PaymentService {
 
     Checkout initialCheckout(String name, CartData cartData);
 
-    Payment completeCheckout(String name, Checkout checkout) throws PayPalRESTException;
+    void completeCheckout(String name, Checkout checkout) throws PayPalRESTException;
 }

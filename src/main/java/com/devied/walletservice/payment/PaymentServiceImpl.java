@@ -124,7 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment completeCheckout(String name, Checkout checkout) throws PayPalRESTException {
+    public void completeCheckout(String name, Checkout checkout) throws PayPalRESTException {
         PaymentExecution paymentExecution = new PaymentExecution();
         paymentExecution.setPayerId(checkout.getPayerId());
 
@@ -132,6 +132,6 @@ public class PaymentServiceImpl implements PaymentService {
 
         APIContext apiContext = new APIContext(CLIENT_ID, CLIENT_SECRET, MODE);
 
-        return payment.execute(apiContext, paymentExecution);
+        payment.execute(apiContext, paymentExecution);
     }
 }

@@ -56,12 +56,12 @@ public class Carts {
 
         return paymentService.initialCheckout(auth.getName(), cartData);
     }
-    
+
     @PatchMapping("/current/checkout")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public Payment completeCheckout(@RequestBody Checkout checkout, Authentication auth) throws PayPalRESTException {
+    public void completeCheckout(@RequestBody Checkout checkout, Authentication auth) throws PayPalRESTException {
 
-        return paymentService.completeCheckout(auth.getName(), checkout);
+        paymentService.completeCheckout(auth.getName(), checkout);
     }
 
 }
