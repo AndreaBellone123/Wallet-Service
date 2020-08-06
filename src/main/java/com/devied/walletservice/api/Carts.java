@@ -6,12 +6,8 @@ import com.devied.walletservice.identity.IdentityRole;
 import com.devied.walletservice.model.Cart;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.payment.PaymentService;
-import com.devied.walletservice.repository.CartDataRepository;
 import com.devied.walletservice.service.CartDataService;
-import com.paypal.api.payments.Payment;
-import com.paypal.api.payments.PaymentExecution;
-import com.paypal.base.rest.APIContext;
-import com.paypal.base.rest.PayPalRESTException;
+import com.devied.walletservice.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -20,9 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/carts")
 public class Carts {
-    private static final String CLIENT_ID = "AeWzs5E743fXTvTCNrRzzaMky1M1DxJ_Pb8xcEj_-hnHnIqiDmuC24YBILsqXdQef-pjp7MFFlhuK31N";
-    private static final String CLIENT_SECRET = "EOwAPnAW5oVJmyU0-wphXdgofFQEYXoBPfyVaCoweb-DlyVp2Yp7rLShjYIcYDYzH3OiFsPV0WTdbxK6";
-    private static final String MODE = "sandbox";
 
     @Autowired
     CartDataService cartDataService;
@@ -34,7 +27,8 @@ public class Carts {
     CartConverter cartConverter;
 
     @Autowired
-    CartDataRepository cartDataRepository;
+    UserDataService userDataService;
+
 
     @GetMapping("/current")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
@@ -50,7 +44,7 @@ public class Carts {
 
     @PostMapping("/current/checkout")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public Checkout initialCheckout(Authentication auth) {
+    public String initialCheckout(Authentication auth) {
 
         CartData cartData = cartDataService.findCurrent(auth.getName());
 
@@ -59,9 +53,11 @@ public class Carts {
 
     @PatchMapping("/current/checkout")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public void completeCheckout(@RequestBody Checkout checkout, Authentication auth) throws PayPalRESTException {
+    public void completeCheckout(@RequestBody Checkout checkout, Authentication auth) throws Exception {
 
         paymentService.completeCheckout(auth.getName(), checkout);
-    }
+        userDataService.updateWallet(auth.getName());
+        cartDataService.emptyCart(auth.getName());
 
+    }
 }

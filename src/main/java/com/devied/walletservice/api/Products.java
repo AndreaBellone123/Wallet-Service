@@ -30,7 +30,7 @@ public class Products {
         productData1.setPrice(productData.getPrice());
         productDataRepository.insert(productData1);
         Product product = new Product();
-        product.setTokens(productData1.getAmount());
+        product.setAmount(productData1.getAmount());
         product.setName(productData1.getName());
         product.setDiscount(productData1.getDiscount());
         product.setPrice(productData1.getPrice());
@@ -60,7 +60,7 @@ public class Products {
 
         ProductData productData1 = productDataRepository.findById(id).orElseThrow(() -> new Exception("No Products Found"));
         Product product = new Product();
-        product.setTokens(productData1.getAmount());
+        product.setAmount(productData1.getAmount());
         product.setName(productData1.getName());
         product.setDiscount(productData1.getDiscount());
         product.setPrice(productData1.getPrice());
@@ -84,7 +84,7 @@ public class Products {
             product.setName(productData.getName());
             product.setPrice(productData.getPrice());
             product.setDiscount(productData.getDiscount());
-            product.setTokens(productData.getAmount());
+            product.setAmount(productData.getAmount());
             product.setId(productData.getId());
             listaProducts.add(product);
         }

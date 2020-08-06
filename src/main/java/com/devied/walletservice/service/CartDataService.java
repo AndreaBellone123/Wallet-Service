@@ -2,7 +2,6 @@ package com.devied.walletservice.service;
 
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.model.Item;
-
 import java.util.List;
 
 public interface CartDataService {
@@ -11,4 +10,5 @@ public interface CartDataService {
 
     CartData patchCurrent(String email, List<Item> items);
 
+    void emptyCart(String email) throws Exception;
 }

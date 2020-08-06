@@ -6,7 +6,6 @@ import com.devied.walletservice.repository.CartDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +17,9 @@ public class CartaDataServiceImpl implements CartDataService {
 
     @Autowired
     CartDataRepository cartDataRepository;
+
+    @Autowired
+    TransactionDataService transactionDataService;
 
     @Override
     public CartData findCurrent(String email) {
@@ -43,5 +45,13 @@ public class CartaDataServiceImpl implements CartDataService {
 
         cartDataRepository.save(cartData);
         return cartData;
+    }
+
+    @Override
+    public void emptyCart(String email) throws Exception {
+
+        CartData cartData = findCurrent(email);
+        transactionDataService.saveTransaction(email);
+        cartDataRepository.delete(cartData);
     }
 }

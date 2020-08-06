@@ -4,11 +4,11 @@ public class Product {
     private String id;
     private String name;
     private double discount;
-    private int tokens;
+    private int amount;
     private double price;
 
-    public Product(int tokens, double price ) {
-        this.tokens = tokens;
+    public Product(int amount, double price ) {
+        this.amount = amount;
         this.price = price;
     }
 
@@ -40,12 +40,12 @@ public class Product {
         this.discount = discount;
     }
 
-    public int getTokens() {
-        return tokens;
+    public int getAmount() {
+        return amount;
     }
 
-    public void setTokens(int tokens) {
-        this.tokens = tokens;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public double getPrice() {

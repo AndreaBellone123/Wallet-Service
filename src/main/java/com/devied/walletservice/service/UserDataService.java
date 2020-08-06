@@ -4,5 +4,7 @@ import com.devied.walletservice.data.UserData;
 
 public interface UserDataService  {
 
-    public UserData findByEmail(String email);
+    UserData findByEmail(String email);
+
+    void updateWallet(String email) throws Exception;
 }

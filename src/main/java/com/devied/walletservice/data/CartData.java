@@ -1,16 +1,12 @@
 package com.devied.walletservice.data;
 
 import com.devied.walletservice.model.Item;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-@Getter
-@Setter
+
 @Document("carts")
 public class CartData {
 
@@ -35,4 +31,47 @@ public class CartData {
         return String.format(Locale.US, "%.2f", total);
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setSubtotal(double subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public void setTax(double tax) {
+        this.tax = tax;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public List<Item> getItemsList() {
+        return itemsList;
+    }
+
+    public void setItemsList(List<Item> itemsList) {
+        this.itemsList = itemsList;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

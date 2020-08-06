@@ -32,7 +32,8 @@ public class PaymentServiceImpl implements PaymentService {
         UserData userData = userDataRepository.findByEmail(email);
 
         payerInfo.setEmail(userData.getEmail());
-
+        payerInfo.setFirstName("Andrea");
+        payerInfo.setLastName("Bellone");
         payer.setPayerInfo(payerInfo);
 
         return payer;
@@ -99,7 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Checkout initialCheckout(String name, CartData cartData) {
+    public String initialCheckout(String name, CartData cartData) {
         Payer payer = getPayerInformation(name);
         RedirectUrls redirectUrls = getRedirectURLs();
         List<Transaction> listTransaction = getTransactionInformation(cartData);
@@ -118,13 +119,12 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (PayPalRESTException e) {
             e.printStackTrace();
         }
-        Checkout checkout = new Checkout();
-        checkout.setUrl(getApprovalLink(approvedPayment));
-        return checkout;
+        return getApprovalLink(approvedPayment);
     }
 
     @Override
     public void completeCheckout(String name, Checkout checkout) throws PayPalRESTException {
+
         PaymentExecution paymentExecution = new PaymentExecution();
         paymentExecution.setPayerId(checkout.getPayerId());
 
@@ -133,5 +133,6 @@ public class PaymentServiceImpl implements PaymentService {
         APIContext apiContext = new APIContext(CLIENT_ID, CLIENT_SECRET, MODE);
 
         payment.execute(apiContext, paymentExecution);
+
     }
 }
