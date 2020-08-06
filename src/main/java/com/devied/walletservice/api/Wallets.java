@@ -45,7 +45,7 @@ public class Wallets {
         ProductData productData1 = productDataRepository.findById(pid).orElseThrow(() -> new Exception("No Products Found"));
 
         if(userData.getAvailableFunds() >= productData1.getPrice()) {
-            userData.setBoughtTokens(userData.getBoughtTokens() + productData1.getTokens());
+            userData.setBoughtTokens(userData.getBoughtTokens() + productData1.getAmount());
             userData.setAvailableFunds(userData.getAvailableFunds() - productData1.getPrice());
             userDataRepository.save(userData);
             User user = userConverter.convert(userData);

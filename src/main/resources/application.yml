@@ -3,7 +3,9 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost/wallet
-
+  mvc:
+    locale: en_US
+    locale-resolver: fixed
 # IDENTITY
 keycloak:
   # `auth-server-url` must exactly match the issuer of the token
