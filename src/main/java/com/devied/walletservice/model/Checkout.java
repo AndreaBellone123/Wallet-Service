@@ -1,4 +1,5 @@
 package com.devied.walletservice.model;
+
 public class Checkout {
 
     private String paymentId;

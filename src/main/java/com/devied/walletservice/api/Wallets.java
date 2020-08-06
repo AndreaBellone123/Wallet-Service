@@ -25,7 +25,7 @@ public class Wallets {
 
     @Autowired
     UserConverter userConverter;
-
+    //TODO PULIRE controlli front-end;
     @GetMapping(produces = "application/json")
     @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<User> getWallet(Authentication auth)  {
@@ -40,7 +40,7 @@ public class Wallets {
     @PutMapping(path = "/{pid}")
     @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<User> buyProduct(@PathVariable(value = "pid")String pid,Authentication auth) throws Exception{
-
+    //TODO controllare utilizzo;
         UserData userData = userDataRepository.findByEmail(auth.getName());
         ProductData productData1 = productDataRepository.findById(pid).orElseThrow(() -> new Exception("No Products Found"));
 

@@ -10,18 +10,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/products")
 public class Products {
-
+//TODO SISTEMARE PRODUCTDATA SERVICE RESTFUL
     @Autowired
     ProductDataRepository productDataRepository;
 
     @PostMapping(produces = "application/json", consumes = "application/json")
     @Secured(IdentityRole.AUTHORITY_ADMIN)
-    public ResponseEntity<Product> addProduct(@RequestBody ProductData productData,Authentication auth) throws Exception {
+    public ResponseEntity<Product> addProduct(@RequestBody ProductData productData, Authentication auth) throws Exception {
 
         ProductData productData1 = new ProductData();
         productData1.setName(productData.getName());
@@ -39,7 +40,7 @@ public class Products {
         return ResponseEntity.accepted().headers(headers).body(product);
     }
 
-    @PutMapping( path = "/{pid}")
+    @PutMapping(path = "/{pid}")
     @Secured(IdentityRole.AUTHORITY_ADMIN)
     public ResponseEntity<ProductData> updateProduct(@PathVariable(value = "pid") String pid, @RequestBody ProductData productData, Authentication auth) throws Exception {
 
@@ -72,7 +73,7 @@ public class Products {
     }
 
     @GetMapping(produces = "application/json")
-    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<ArrayList<Product>> getProducts() {
 
         ArrayList<ProductData> listaProductsData = (ArrayList<ProductData>) productDataRepository.findAll();
