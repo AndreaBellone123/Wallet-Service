@@ -10,13 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/products")
 public class Products {
-//TODO SISTEMARE PRODUCTDATA SERVICE RESTFUL
     @Autowired
     ProductDataRepository productDataRepository;
 
