@@ -20,7 +20,7 @@ public class Wallets {
     @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<User> getWallet(Authentication auth)  { return userDataService.getWallet(auth.getName()); }
 
-    @PutMapping(path = "/{pid}")
+   /* @PutMapping(path = "/{pid}")
     @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
-    public ResponseEntity<User> buyProduct(@PathVariable(value = "pid")String pid,Authentication auth) throws Exception{ return userDataService.buyProduct(auth.getName(),pid); }
+    public ResponseEntity<User> buyProduct(@PathVariable(value = "pid")String pid,Authentication auth) throws Exception{ return userDataService.buyProduct(auth.getName(),pid); } */
 }

@@ -38,13 +38,13 @@ public class Carts {
 
     @PatchMapping("/current")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public Cart updateCart(Authentication auth, @RequestBody Cart updatedCart) {
+    public Cart updateCart(Authentication auth, @RequestBody Cart updatedCart) throws Exception {
         return cartConverter.convert(cartDataService.patchCurrent(auth.getName(), updatedCart.getItemsList()));
     }
 
     @PostMapping("/current/checkout")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public String initialCheckout(Authentication auth) {
+    public Checkout initialCheckout(Authentication auth) throws Exception {
 
         CartData cartData = cartDataService.findCurrent(auth.getName());
         return paymentService.initialCheckout(auth.getName(), cartData);

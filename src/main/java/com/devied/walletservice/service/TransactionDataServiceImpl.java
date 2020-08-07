@@ -26,10 +26,28 @@ public class TransactionDataServiceImpl implements TransactionDataService{
     public void saveTransaction(String email) throws Exception {
 
         CartData cartData = cartDataService.findCurrent(email);
-        TransactionData transactionData = new TransactionData();
+        TransactionData transactionData = transactionDataRepository.findByEmail(email);
         ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new Exception("No Products Found"));
         transactionData.setProductData(productdata);
-        transactionData.setEmail(email);
         transactionDataRepository.save(transactionData);
+    }
+
+    @Override
+    public void createTransaction(String url, String name) {
+        TransactionData transactionData = new TransactionData();
+        transactionData.setEmail(name);
+        transactionData.setUrl(url);
+        transactionDataRepository.save(transactionData);
+    }
+
+    @Override
+    public TransactionData findByUrl(String url) {
+        return transactionDataRepository.findByUrl(url);
+    }
+
+    @Override
+    public TransactionData findByEmail(String email) {
+
+        return transactionDataRepository.findByEmail(email);
     }
 }

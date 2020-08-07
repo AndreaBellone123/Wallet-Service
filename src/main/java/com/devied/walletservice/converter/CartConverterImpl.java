@@ -13,6 +13,7 @@ public class CartConverterImpl implements CartConverter{
     public Cart convert(CartData current) {
 
         Cart cart = new Cart();
+        cart.setSubTotal(current.getSubtotal());
         cart.setItemsList(current.getItemsList());
         cart.setId(current.getId());
         return cart;

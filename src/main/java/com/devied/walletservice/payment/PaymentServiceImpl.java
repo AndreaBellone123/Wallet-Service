@@ -2,8 +2,14 @@ package com.devied.walletservice.payment;
 
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.UserData;
+import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
+import com.devied.walletservice.repository.CartDataRepository;
+import com.devied.walletservice.repository.TransactionDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
+import com.devied.walletservice.service.CartDataService;
+import com.devied.walletservice.service.TransactionDataService;
+import com.devied.walletservice.util.CartStatus;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
@@ -17,12 +23,24 @@ import java.util.List;
 @Service
 @Transactional
 public class PaymentServiceImpl implements PaymentService {
-    private static final String CLIENT_ID = "AeWzs5E743fXTvTCNrRzzaMky1M1DxJ_Pb8xcEj_-hnHnIqiDmuC24YBILsqXdQef-pjp7MFFlhuK31N";
-    private static final String CLIENT_SECRET = "EOwAPnAW5oVJmyU0-wphXdgofFQEYXoBPfyVaCoweb-DlyVp2Yp7rLShjYIcYDYzH3OiFsPV0WTdbxK6";
+    private static final String CLIENT_ID = "AVNSlr4OhE8kAJVt82ygsLq7yD64O8eYIwP2n1Q790DtcCzkE1-4uyfQrtR1u1Ysz_Hlaz7HdikaIFoQ";
+    private static final String CLIENT_SECRET = "EK7hItd2kMKDv8zJ4-NFxSCk1myGYuP-JHXNj4SlqUGB42krSotKiHOm_jixeR9bjfp4TfCVu1k3PKbs";
     private static final String MODE = "sandbox";
 
     @Autowired
     UserDataRepository userDataRepository;
+
+    @Autowired
+    CartDataRepository cartDataRepository;
+
+    @Autowired
+    CartDataService cartDataService;
+
+    @Autowired
+    TransactionDataService transactionDataService;
+
+    @Autowired
+    TransactionDataRepository transactionDataRepository;
 
 
     public Payer getPayerInformation(String email) {
@@ -50,23 +68,28 @@ public class PaymentServiceImpl implements PaymentService {
     public List<Transaction> getTransactionInformation(CartData orderDetail) {
 
         Details details = new Details();
-        details.setSubtotal(orderDetail.getSubtotal());
-        details.setTax(orderDetail.getTax());
+        details.setSubtotal(orderDetail.setSubtotal());
+        details.setTax(orderDetail.setTax());
 
         Amount amount = new Amount();
         amount.setCurrency("EUR");
-        amount.setTotal(orderDetail.getTotal());
+        amount.setTotal(orderDetail.formatTotal());
         amount.setDetails(details);
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         transaction.setDescription(orderDetail.getId());
         ItemList itemList = new ItemList();
         List<Item> items = new ArrayList<>();
-        Item item = new Item();
-        item.setCurrency("EUR");
-        item.setName(orderDetail.getId());
-        item.setPrice(orderDetail.getSubtotal());
-        item.setTax(orderDetail.getTax());
+
+        // TODO ciclare la lista degli item
+        for (CartItem cartItem : orderDetail.getItemsList()) {
+            Item item = new Item();
+            item.setCurrency(orderDetail.getCurrency());
+            item.setName(orderDetail.getId());
+            item.setPrice(orderDetail.setSubtotal());
+            item.setTax(orderDetail.setTax());
+            item.setQuantity(cartItem.getQuantity());
+        }
         item.setQuantity("1");
         items.add(item);
         itemList.setItems(items);
@@ -98,7 +121,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public String initialCheckout(String name, CartData cartData) {
+    public Checkout initialCheckout(String name, CartData cartData) throws Exception {
+
+        cartDataService.updateState(cartData);
+
         Payer payer = getPayerInformation(name);
         RedirectUrls redirectUrls = getRedirectURLs();
         List<Transaction> listTransaction = getTransactionInformation(cartData);
@@ -117,11 +143,18 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (PayPalRESTException e) {
             e.printStackTrace();
         }
-        return getApprovalLink(approvedPayment);
+
+        Checkout checkout = new Checkout();
+        checkout.setUrl(getApprovalLink(approvedPayment));
+        transactionDataService.createTransaction(checkout.getUrl(), name);
+
+        return checkout;
     }
 
     @Override
-    public void completeCheckout(String name, Checkout checkout) throws PayPalRESTException {
+    public void completeCheckout(String name, Checkout checkout) throws Exception {
+
+        cartDataService.finalState(name);
 
         PaymentExecution paymentExecution = new PaymentExecution();
         paymentExecution.setPayerId(checkout.getPayerId());

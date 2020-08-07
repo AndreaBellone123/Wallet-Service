@@ -5,11 +5,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Objects;
-
+//TODO trasformare in CartItem
 @Getter
 @Setter
 @NoArgsConstructor
-public class Item {
+public class CartItem {
 
     private String id;
     private int quantity;
@@ -18,8 +18,8 @@ public class Item {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        return Objects.equals(id, item.id);
+        CartItem cartItem = (CartItem) o;
+        return Objects.equals(id, cartItem.id);
     }
 
     @Override

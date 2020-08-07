@@ -6,4 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface TransactionDataRepository extends MongoRepository<TransactionData,String> {
 
 
+    TransactionData findByUrl(String url);
+
+    TransactionData findByEmail(String email);
 }

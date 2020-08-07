@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @Service
 @Transactional
 public class ProductDataServiceImpl implements ProductDataService {
-
+    //TODO togliere parte forntend
     @Autowired
     ProductDataRepository productDataRepository;
 
@@ -32,13 +32,11 @@ public class ProductDataServiceImpl implements ProductDataService {
         product.setName(productData1.getName());
         product.setDiscount(productData1.getDiscount());
         product.setPrice(productData1.getPrice());
-        var headers = new HttpHeaders();
-        headers.add("Product Added", "Products Controller");
-        return ResponseEntity.accepted().headers(headers).body(product);
+        return null;
     }
 
     @Override
-    public ResponseEntity<ProductData> updateProduct(String pid, ProductData productData, String email)throws Exception{
+    public ResponseEntity<ProductData> updateProduct(String pid, ProductData productData, String email) throws Exception {
         ProductData productData1 = productDataRepository.findById(pid).orElseThrow(() -> new Exception("No Products Found"));
         productData1.setDiscount(productData.getDiscount());
         productData1.setName(productData.getName());
@@ -83,5 +81,11 @@ public class ProductDataServiceImpl implements ProductDataService {
         var headers = new HttpHeaders();
         headers.add("List of currently available products", "Products Controller");
         return ResponseEntity.accepted().headers(headers).body(listaProducts);
+    }
+
+    @Override
+    public ProductData findProduct(String id) throws Exception {
+
+        return productDataRepository.findById(id).orElseThrow(() -> new Exception("No Products Found"));
     }
 }

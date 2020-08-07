@@ -11,10 +11,12 @@ import java.util.Date;
 @NoArgsConstructor
 @Document("transactions")
 public class TransactionData {
-
+ //TODO PaymentId--
     @Id
     private String id;
+    private String paymentId;
     private String email;
     private ProductData productData;
     private Date date = new Date();
+    private String url;
 }
