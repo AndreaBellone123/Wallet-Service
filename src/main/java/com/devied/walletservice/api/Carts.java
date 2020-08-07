@@ -56,7 +56,7 @@ public class Carts {
 
         paymentService.completeCheckout(auth.getName(), checkout);
         userDataService.updateWallet(auth.getName());
-        cartDataService.emptyCart(auth.getName());
+        cartDataService.emptyCart(auth.getName(), checkout);
 
     }
 }

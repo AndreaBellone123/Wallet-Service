@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Objects;
-//TODO trasformare in CartItem
+
 @Getter
 @Setter
 @NoArgsConstructor

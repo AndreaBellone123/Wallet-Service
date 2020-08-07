@@ -4,10 +4,11 @@ import com.devied.walletservice.identity.IdentityRole;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/wallets")
@@ -17,8 +18,10 @@ public class Wallets {
     UserDataService userDataService;
 
     @GetMapping(produces = "application/json")
-    @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
-    public ResponseEntity<User> getWallet(Authentication auth)  { return userDataService.getWallet(auth.getName()); }
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
+    public User getWallet(Authentication auth) {
+        return userDataService.getWallet(auth.getName());
+    }
 
    /* @PutMapping(path = "/{pid}")
     @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})

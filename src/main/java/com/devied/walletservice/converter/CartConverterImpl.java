@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class CartConverterImpl implements CartConverter{
+public class CartConverterImpl implements CartConverter {
 
     @Override
     public Cart convert(CartData current) {

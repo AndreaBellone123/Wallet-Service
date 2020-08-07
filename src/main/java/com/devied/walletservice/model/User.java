@@ -10,8 +10,6 @@ import lombok.Setter;
 public class User {
 
     private String email;
-    private int earnedTokens;
-    private int boughtTokens;
-    private boolean isAdmin;
-    private double availableFunds;
+    private int earned;
+    private int bought;
 }

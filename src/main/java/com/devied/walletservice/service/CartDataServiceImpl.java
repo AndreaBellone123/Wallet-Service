@@ -3,11 +3,13 @@ package com.devied.walletservice.service;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.model.CartItem;
+import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.repository.CartDataRepository;
 import com.devied.walletservice.util.CartStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.Set;
 
 @Service
 @Transactional
-public class CartaDataServiceImpl implements CartDataService {
+public class CartDataServiceImpl implements CartDataService {
 
     @Autowired
     CartDataRepository cartDataRepository;
@@ -58,10 +60,10 @@ public class CartaDataServiceImpl implements CartDataService {
     }
 
     @Override
-    public void emptyCart(String email) throws Exception {
+    public void emptyCart(String email, Checkout checkout) throws Exception {
 
         CartData cartData = findCurrent(email);
-        transactionDataService.saveTransaction(email);
+        transactionDataService.saveTransaction(email, checkout);
         cartDataRepository.delete(cartData);
     }
 

@@ -5,12 +5,9 @@ import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.model.User;
-import com.devied.walletservice.repository.CartDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,34 +19,30 @@ public class UserDataServiceImpl implements UserDataService {
     UserDataRepository userDataRepository;
 
     @Autowired
-    CartDataRepository cartDataRepository;
-
-    @Autowired
     CartDataService cartDataService;
 
     @Autowired
     ProductDataRepository productDataRepository;
-
 
     @Autowired
     UserConverter userConverter;
 
     @Override
     public UserData findByEmail(String email) {
-       return userDataRepository.findByEmail(email);
+        return userDataRepository.findByEmail(email);
     }
 
     @Override
     public void updateWallet(String email) throws Exception {
 
-       UserData userData = userDataRepository.findByEmail(email);
-       CartData cartData = cartDataService.findCurrent(email);
-       ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new Exception("No Products Found"));
-       userData.setBoughtTokens(userData.getBoughtTokens() + productdata.getAmount());
-       userDataRepository.save(userData);
+        UserData userData = userDataRepository.findByEmail(email);
+        CartData cartData = cartDataService.findCurrent(email);
+        ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new Exception("No Products Found"));
+        userData.setBought(userData.getBought() + productdata.getAmount());
+        userDataRepository.save(userData);
     }
 
-    @Override
+    /*@Override
     public ResponseEntity<User> buyProduct(String email, String pid) throws Exception {
 
         UserData userData = userDataRepository.findByEmail(email);
@@ -70,15 +63,14 @@ public class UserDataServiceImpl implements UserDataService {
             User user = userConverter.convert(userData);
             return ResponseEntity.badRequest().headers(headers).body(user);
         }
-    }
+    }*/
 
     @Override
-    public ResponseEntity<User> getWallet(String email) {
-
+    public User getWallet(String email) {
+        //TODO settare creazione nuovo wallet
         UserData userData = userDataRepository.findByEmail(email);
         User user = userConverter.convert(userData);
-        var headers = new HttpHeaders();
-        headers.add("Funds currently available on your account", "Wallets Controller");
-        return ResponseEntity.accepted().headers(headers).body(user);
+
+        return user;
     }
 }

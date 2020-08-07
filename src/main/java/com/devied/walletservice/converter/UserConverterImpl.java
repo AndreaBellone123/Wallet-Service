@@ -12,10 +12,8 @@ public class UserConverterImpl implements UserConverter {
     public User convert(UserData current) {
         User user = new User();
         user.setEmail(current.getEmail());
-        user.setAdmin(current.isAdmin());
-        user.setAvailableFunds(current.getAvailableFunds());
-        user.setBoughtTokens(current.getBoughtTokens());
-        user.setEarnedTokens(current.getEarnedTokens());
+        user.setBought(current.getBought());
+        user.setEarned(current.getEarned());
         return user;
     }
 }

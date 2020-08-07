@@ -4,12 +4,9 @@ import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
-import com.devied.walletservice.repository.CartDataRepository;
-import com.devied.walletservice.repository.TransactionDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import com.devied.walletservice.service.CartDataService;
 import com.devied.walletservice.service.TransactionDataService;
-import com.devied.walletservice.util.CartStatus;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
@@ -17,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 @Transactional
@@ -31,16 +30,10 @@ public class PaymentServiceImpl implements PaymentService {
     UserDataRepository userDataRepository;
 
     @Autowired
-    CartDataRepository cartDataRepository;
-
-    @Autowired
     CartDataService cartDataService;
 
     @Autowired
     TransactionDataService transactionDataService;
-
-    @Autowired
-    TransactionDataRepository transactionDataRepository;
 
 
     public Payer getPayerInformation(String email) {
@@ -81,17 +74,16 @@ public class PaymentServiceImpl implements PaymentService {
         ItemList itemList = new ItemList();
         List<Item> items = new ArrayList<>();
 
-        // TODO ciclare la lista degli item
         for (CartItem cartItem : orderDetail.getItemsList()) {
             Item item = new Item();
             item.setCurrency(orderDetail.getCurrency());
             item.setName(orderDetail.getId());
             item.setPrice(orderDetail.setSubtotal());
             item.setTax(orderDetail.setTax());
-            item.setQuantity(cartItem.getQuantity());
+            item.setQuantity(String.valueOf(cartItem.getQuantity()));
+            items.add(item);
         }
-        item.setQuantity("1");
-        items.add(item);
+
         itemList.setItems(items);
         transaction.setItemList(itemList);
         List<Transaction> listTransaction = new ArrayList<>();

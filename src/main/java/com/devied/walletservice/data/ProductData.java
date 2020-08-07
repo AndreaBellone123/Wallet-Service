@@ -1,4 +1,5 @@
 package com.devied.walletservice.data;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
