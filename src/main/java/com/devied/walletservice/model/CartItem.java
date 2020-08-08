@@ -3,7 +3,6 @@ package com.devied.walletservice.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.Objects;
 
 @Getter
@@ -26,4 +25,5 @@ public class CartItem {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

@@ -7,5 +7,5 @@ public interface TransactionDataRepository extends MongoRepository<TransactionDa
 
     TransactionData findByUrl(String url);
 
-    TransactionData findByEmail(String email);
+    TransactionData findTopByEmailOrderByDateDesc(String email);
 }

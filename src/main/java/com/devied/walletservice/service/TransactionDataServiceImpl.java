@@ -27,7 +27,7 @@ public class TransactionDataServiceImpl implements TransactionDataService {
     public void saveTransaction(String email, Checkout checkout) throws Exception {
 
         CartData cartData = cartDataService.findCurrent(email);
-        TransactionData transactionData = transactionDataRepository.findByEmail(email);
+        TransactionData transactionData = transactionDataRepository.findTopByEmailOrderByDateDesc(email);
         ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new Exception("No Products Found"));
         transactionData.setProductData(productdata);
         transactionData.setPaymentId(checkout.getPaymentId());
@@ -48,8 +48,8 @@ public class TransactionDataServiceImpl implements TransactionDataService {
     }
 
     @Override
-    public TransactionData findByEmail(String email) {
+    public TransactionData findTopByEmailOrderByDateDesc(String email) {
 
-        return transactionDataRepository.findByEmail(email);
+        return transactionDataRepository.findTopByEmailOrderByDateDesc(email);
     }
 }

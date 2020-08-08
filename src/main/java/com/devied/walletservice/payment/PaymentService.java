@@ -15,7 +15,7 @@ public interface PaymentService {
 
     RedirectUrls getRedirectURLs();
 
-    List<Transaction> getTransactionInformation(CartData orderDetail);
+    List<Transaction> getTransactionInformation(CartData orderDetail) throws Exception;
 
     String getApprovalLink(Payment approvedPayment);
 

@@ -78,7 +78,7 @@ public class CartDataServiceImpl implements CartDataService {
     }
 
     @Override
-    public void finalState(String name) throws Exception {
+    public void finalState(String name) throws Exception { // TODO richiedere prima il pagamento
         CartData cartData = cartDataService.findCurrent(name);
         if (!cartData.getStatus().equals(CartStatus.Pending)) {
             throw new Exception("Cart in Forbidden Status");

@@ -11,5 +11,5 @@ public interface TransactionDataService {
 
     TransactionData findByUrl(String url);
 
-    TransactionData findByEmail(String email);
+    TransactionData findTopByEmailOrderByDateDesc(String email);
 }

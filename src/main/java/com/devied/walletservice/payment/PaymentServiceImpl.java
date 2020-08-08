@@ -1,9 +1,11 @@
 package com.devied.walletservice.payment;
 
 import com.devied.walletservice.data.CartData;
+import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
+import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import com.devied.walletservice.service.CartDataService;
 import com.devied.walletservice.service.TransactionDataService;
@@ -13,8 +15,6 @@ import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +34,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     TransactionDataService transactionDataService;
+
+    @Autowired
+    ProductDataRepository productDataRepository;
 
 
     public Payer getPayerInformation(String email) {
@@ -58,7 +61,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
-    public List<Transaction> getTransactionInformation(CartData orderDetail) {
+    public List<Transaction> getTransactionInformation(CartData orderDetail) throws Exception {
+
+        System.out.println(orderDetail.setSubtotal());
 
         Details details = new Details();
         details.setSubtotal(orderDetail.setSubtotal());
@@ -67,6 +72,7 @@ public class PaymentServiceImpl implements PaymentService {
         Amount amount = new Amount();
         amount.setCurrency("EUR");
         amount.setTotal(orderDetail.formatTotal());
+        System.out.print(amount.getTotal());
         amount.setDetails(details);
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
@@ -78,7 +84,8 @@ public class PaymentServiceImpl implements PaymentService {
             Item item = new Item();
             item.setCurrency(orderDetail.getCurrency());
             item.setName(orderDetail.getId());
-            item.setPrice(orderDetail.setSubtotal());
+            ProductData productData = productDataRepository.findById(cartItem.getId()).orElseThrow(() -> new Exception("No Products Found"));
+            item.setPrice(productData.setPrice());
             item.setTax(orderDetail.setTax());
             item.setQuantity(String.valueOf(cartItem.getQuantity()));
             items.add(item);
@@ -87,6 +94,8 @@ public class PaymentServiceImpl implements PaymentService {
         itemList.setItems(items);
         transaction.setItemList(itemList);
         List<Transaction> listTransaction = new ArrayList<>();
+        System.out.println(transaction.getAmount());
+        System.out.println(transaction.getItemList());
         listTransaction.add(transaction);
 
         return listTransaction;
@@ -146,8 +155,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void completeCheckout(String name, Checkout checkout) throws Exception {
 
-        cartDataService.finalState(name);
-
         PaymentExecution paymentExecution = new PaymentExecution();
         paymentExecution.setPayerId(checkout.getPayerId());
 
@@ -156,6 +163,8 @@ public class PaymentServiceImpl implements PaymentService {
         APIContext apiContext = new APIContext(CLIENT_ID, CLIENT_SECRET, MODE);
 
         payment.execute(apiContext, paymentExecution);
+
+        cartDataService.finalState(name);
 
     }
 }
