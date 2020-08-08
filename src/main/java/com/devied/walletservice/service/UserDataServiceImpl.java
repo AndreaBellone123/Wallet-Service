@@ -67,10 +67,17 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public User getWallet(String email) {
-        //TODO settare creazione nuovo wallet
+       
         UserData userData = userDataRepository.findByEmail(email);
-        User user = userConverter.convert(userData);
-
-        return user;
+        if (userData == null){
+            UserData userData1 = new UserData();
+            userData1.setEmail(email);
+            userDataRepository.save(userData1);
+            User user = userConverter.convert(userData1);
+            return user;
+        }else {
+            User user = userConverter.convert(userData);
+            return user;
+        }
     }
 }
