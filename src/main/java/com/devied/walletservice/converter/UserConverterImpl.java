@@ -10,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserConverterImpl implements UserConverter {
     @Override
     public User convert(UserData current) {
+
         User user = new User();
         user.setEmail(current.getEmail());
         user.setBought(current.getBought());
         user.setEarned(current.getEarned());
+        user.setTotal(user.getBought() + user.getEarned());
+
         return user;
     }
 }

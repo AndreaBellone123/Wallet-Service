@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +23,7 @@ public class CartData {
     private double subtotal;
     private double tax;
     private double total;
-    private List<CartItem> itemsList = new ArrayList<CartItem>();
+    private List<CartItem> itemsList = new ArrayList<>();
     private Date date = new Date();
     private String email;
     private String currency = "EUR";
@@ -35,6 +34,7 @@ public class CartData {
     }
 
     public void setSubtotal(double subtotal) {
+
         this.subtotal = subtotal;
         this.total = this.subtotal + this.tax;
     }
@@ -44,6 +44,7 @@ public class CartData {
     }
 
     public void setTax(double tax) {
+
         this.tax = tax;
         this.total = this.subtotal + this.tax;
     }
@@ -53,6 +54,7 @@ public class CartData {
     }
 
     public void setTotal(double total) throws Exception {
+
         throw new Exception("Not Supported");
     }
 }

@@ -7,7 +7,6 @@ import com.devied.walletservice.repository.ProductDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 
 @Service
@@ -56,15 +55,16 @@ public class ProductDataServiceImpl implements ProductDataService {
     @Override
     public ArrayList<Product> getProducts() {
 
-        ArrayList<ProductData> listaProductsData = (ArrayList<ProductData>) productDataRepository.findAll();
+        ArrayList<ProductData> productsDataList = (ArrayList<ProductData>) productDataRepository.findAll();
 
-        ArrayList<Product> listaProducts = new ArrayList<Product>();
+        ArrayList<Product> productsList = new ArrayList<>();
 
-        for (ProductData productData : listaProductsData) {
-            listaProducts.add(productConverter.convert(productData));
+        for (ProductData productData : productsDataList) {
+
+            productsList .add(productConverter.convert(productData));
         }
 
-        return listaProducts;
+        return productsList ;
     }
 
     @Override

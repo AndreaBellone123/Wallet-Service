@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.Locale;
 
 @Getter
@@ -22,6 +21,5 @@ public class ProductData {
     public String setPrice() {
         return String.format(Locale.US, "%.2f", price);
     }
-
 
 }

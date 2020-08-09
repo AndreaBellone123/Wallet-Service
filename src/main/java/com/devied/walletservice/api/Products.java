@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 
 @RestController
@@ -19,7 +20,7 @@ public class Products {
 
     @PostMapping(produces = "application/json", consumes = "application/json")
     @Secured(IdentityRole.AUTHORITY_ADMIN)
-    public Product addProduct(@RequestBody ProductData productData, Authentication auth) throws Exception {
+    public Product addProduct(@RequestBody ProductData productData, Authentication auth) {
 
         return productDataService.addProduct(productData, auth.getName());
     }

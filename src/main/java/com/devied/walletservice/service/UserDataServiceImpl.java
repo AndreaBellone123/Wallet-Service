@@ -39,6 +39,7 @@ public class UserDataServiceImpl implements UserDataService {
         CartData cartData = cartDataService.findCurrent(email);
         ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new Exception("No Products Found"));
         userData.setBought(userData.getBought() + productdata.getAmount());
+        userData.setTotal(userData.getBought() + userData.getEarned());
         userDataRepository.save(userData);
     }
 
@@ -67,32 +68,40 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public User getWallet(String email) {
-       
+
         UserData userData = userDataRepository.findByEmail(email);
-        if (userData == null){
+
+        if (userData == null) {
+
             UserData userData1 = new UserData();
             userData1.setEmail(email);
             userDataRepository.save(userData1);
-            User user = userConverter.convert(userData1);
-            return user;
-        }else {
-            User user = userConverter.convert(userData);
-            return user;
+
+            return userConverter.convert(userData1);
+
+        } else {
+
+            return userConverter.convert(userData);
+
         }
     }
 
     @Override
-    public User donate(String name,String sid,int amount) throws Exception {
+    public User donate(String name, String sid, int amount) throws Exception {
 
         UserData donatingUser = userDataRepository.findByEmail(name);
 
         UserData streamingUser = userDataRepository.findByEmail(sid);
 
-        if(donatingUser.getBought() >= amount && userDataRepository.findByEmail(sid) != null && amount > 0){
+        if (donatingUser.getBought() >= amount && userDataRepository.findByEmail(sid) != null && amount > 0 && !donatingUser.getId().equals(streamingUser.getId())) {
 
-            streamingUser.setEarned(streamingUser.getEarned() + amount );
+            streamingUser.setEarned(streamingUser.getEarned() + amount);
 
             donatingUser.setBought(donatingUser.getBought() - amount);
+
+            donatingUser.setTotal(donatingUser.getBought() + donatingUser.getEarned());
+
+            streamingUser.setTotal(streamingUser.getBought() + streamingUser.getEarned());
 
             userDataRepository.save(streamingUser);
 
@@ -100,11 +109,9 @@ public class UserDataServiceImpl implements UserDataService {
 
             return userConverter.convert(donatingUser);
 
-        }
+        } else {
 
-        else {
             throw new Exception("There was an error processing your request!");
         }
-
     }
 }

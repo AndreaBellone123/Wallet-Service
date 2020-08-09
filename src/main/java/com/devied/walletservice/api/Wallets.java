@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/wallets")
 public class Wallets {
 
+    // TODO implement channel subscriptions,unlocking of exclusive content
+
     @Autowired
     UserDataService userDataService;
 
@@ -27,10 +29,9 @@ public class Wallets {
 
     @PatchMapping("/{sid}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User donate(Authentication auth,@PathVariable(value = "sid") String sid,@RequestBody int amount) throws Exception {
+    public User donate(Authentication auth, @PathVariable(value = "sid") String sid, @RequestBody int amount) throws Exception {
 
-        return userDataService.donate(auth.getName(),sid,amount);
+        return userDataService.donate(auth.getName(), sid, amount);
 
     }
-
 }

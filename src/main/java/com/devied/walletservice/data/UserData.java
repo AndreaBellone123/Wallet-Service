@@ -17,4 +17,5 @@ public class UserData {
     private String email;
     private int earned;
     private int bought;
+    private int total;
 }

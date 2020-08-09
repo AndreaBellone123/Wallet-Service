@@ -40,6 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     public Payer getPayerInformation(String email) {
+
         Payer payer = new Payer();
         payer.setPaymentMethod("paypal");
         PayerInfo payerInfo = new PayerInfo();
@@ -68,7 +69,6 @@ public class PaymentServiceImpl implements PaymentService {
         Details details = new Details();
         details.setSubtotal(orderDetail.setSubtotal());
         details.setTax(orderDetail.setTax());
-
         Amount amount = new Amount();
         amount.setCurrency("EUR");
         amount.setTotal(orderDetail.formatTotal());
@@ -135,17 +135,20 @@ public class PaymentServiceImpl implements PaymentService {
         requestPayment.setRedirectUrls(redirectUrls);
         requestPayment.setPayer(payer);
         requestPayment.setIntent("authorize");
-
         APIContext apiContext = new APIContext(CLIENT_ID, CLIENT_SECRET, MODE);
-
         Payment approvedPayment = null;
+
         try {
+
             approvedPayment = requestPayment.create(apiContext);
+
         } catch (PayPalRESTException e) {
+
             e.printStackTrace();
         }
 
         Checkout checkout = new Checkout();
+        assert approvedPayment != null;
         checkout.setUrl(getApprovalLink(approvedPayment));
         transactionDataService.createTransaction(checkout.getUrl(), name);
 

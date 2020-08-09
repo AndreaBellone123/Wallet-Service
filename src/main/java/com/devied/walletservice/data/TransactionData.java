@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.Date;
 
 @Getter
@@ -21,4 +20,5 @@ public class TransactionData {
     private ProductData productData;
     private Date date = new Date();
     private String url;
+
 }
