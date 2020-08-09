@@ -12,4 +12,6 @@ public interface UserDataService {
     //ResponseEntity<User> buyProduct(String email, String pid) throws Exception;
 
     User getWallet(String email);
+
+    User donate(String name,String sid,int amount);
 }

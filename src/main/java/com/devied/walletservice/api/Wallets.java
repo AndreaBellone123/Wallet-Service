@@ -6,9 +6,7 @@ import com.devied.walletservice.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/wallets")
@@ -26,4 +24,13 @@ public class Wallets {
    /* @PutMapping(path = "/{pid}")
     @Secured({IdentityRole.AUTHORITY_USER,IdentityRole.AUTHORITY_ADMIN})
     public ResponseEntity<User> buyProduct(@PathVariable(value = "pid")String pid,Authentication auth) throws Exception{ return userDataService.buyProduct(auth.getName(),pid); } */
+
+    @PatchMapping("/{sid}")
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
+    public User donate(Authentication auth,@PathVariable(value = "sid") String sid,@RequestBody int amount){
+
+        return userDataService.donate(auth.getName(),sid,amount);
+
+    }
+
 }

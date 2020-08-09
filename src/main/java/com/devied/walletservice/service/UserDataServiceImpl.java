@@ -80,4 +80,29 @@ public class UserDataServiceImpl implements UserDataService {
             return user;
         }
     }
+
+    @Override
+    public User donate(String name,String sid,int amount) {
+
+        UserData donatingUser = userDataRepository.findByEmail(name);
+
+        UserData streamingUser = userDataRepository.findByEmail(sid);
+
+        if(donatingUser.getBought() >= amount){
+
+            streamingUser.setEarned(streamingUser.getEarned() + amount );
+
+            donatingUser.setBought(donatingUser.getBought() - amount);
+
+            userDataRepository.save(streamingUser);
+
+            userDataRepository.save(donatingUser);
+
+            return userConverter.convert(donatingUser);
+
+        }
+
+        return null;
+
+    }
 }
