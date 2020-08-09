@@ -27,7 +27,7 @@ public class Wallets {
 
     @PatchMapping("/{sid}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User donate(Authentication auth,@PathVariable(value = "sid") String sid,@RequestBody int amount){
+    public User donate(Authentication auth,@PathVariable(value = "sid") String sid,@RequestBody int amount) throws Exception {
 
         return userDataService.donate(auth.getName(),sid,amount);
 

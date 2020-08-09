@@ -82,13 +82,13 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public User donate(String name,String sid,int amount) {
+    public User donate(String name,String sid,int amount) throws Exception {
 
         UserData donatingUser = userDataRepository.findByEmail(name);
 
         UserData streamingUser = userDataRepository.findByEmail(sid);
 
-        if(donatingUser.getBought() >= amount){
+        if(donatingUser.getBought() >= amount && userDataRepository.findByEmail(sid) != null){
 
             streamingUser.setEarned(streamingUser.getEarned() + amount );
 
@@ -102,7 +102,9 @@ public class UserDataServiceImpl implements UserDataService {
 
         }
 
-        return null;
+        else {
+            throw new Exception("There was an error processing your request!");
+        }
 
     }
 }

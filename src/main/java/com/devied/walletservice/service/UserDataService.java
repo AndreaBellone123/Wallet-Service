@@ -13,5 +13,5 @@ public interface UserDataService {
 
     User getWallet(String email);
 
-    User donate(String name,String sid,int amount);
+    User donate(String name,String sid,int amount) throws Exception;
 }
