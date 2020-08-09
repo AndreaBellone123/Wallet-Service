@@ -88,7 +88,7 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData streamingUser = userDataRepository.findByEmail(sid);
 
-        if(donatingUser.getBought() >= amount && userDataRepository.findByEmail(sid) != null){
+        if(donatingUser.getBought() >= amount && userDataRepository.findByEmail(sid) != null && amount > 0){
 
             streamingUser.setEarned(streamingUser.getEarned() + amount );
 
