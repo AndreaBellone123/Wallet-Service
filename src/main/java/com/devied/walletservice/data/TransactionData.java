@@ -9,7 +9,6 @@ import java.util.Date;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Document("transactions")
 public class TransactionData {
 

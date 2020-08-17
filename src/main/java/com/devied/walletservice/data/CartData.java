@@ -14,7 +14,6 @@ import java.util.Locale;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Document("carts")
 public class CartData {
 

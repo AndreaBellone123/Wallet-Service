@@ -33,6 +33,9 @@ public class UserDataServiceImpl implements UserDataService {
     @Autowired
     UserConverter userConverter;
 
+    @Autowired
+    DonationDataRepository donationDataRepository;
+
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
         return userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
@@ -136,10 +139,10 @@ public class UserDataServiceImpl implements UserDataService {
     @Override
     public User createWallet(String name) {
 
-        UserData userData1 = new UserData();
-        userData1.setEmail(name);
-        userDataRepository.save(userData1);
+        UserData userData = new UserData();
+        userData.setEmail(name);
+        userDataRepository.save(userData);
 
-        return userConverter.convert(userData1);
+        return userConverter.convert(userData);
     }
 }
