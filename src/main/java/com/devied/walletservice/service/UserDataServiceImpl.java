@@ -33,8 +33,6 @@ public class UserDataServiceImpl implements UserDataService {
     @Autowired
     UserConverter userConverter;
 
-    @Autowired
-    DonationDataRepository donationDataRepository;
 
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
