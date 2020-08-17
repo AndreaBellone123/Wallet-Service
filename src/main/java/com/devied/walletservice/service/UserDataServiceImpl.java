@@ -2,10 +2,12 @@ package com.devied.walletservice.service;
 
 import com.devied.walletservice.converter.UserConverter;
 import com.devied.walletservice.data.CartData;
+import com.devied.walletservice.data.DonationData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
 import com.devied.walletservice.model.User;
+import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Autowired
     UserConverter userConverter;
+
+    @Autowired
+    DonationDataRepository donationDataRepository;
 
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
@@ -118,6 +123,12 @@ public class UserDataServiceImpl implements UserDataService {
 
             userDataRepository.save(donatingUser);
 
+            DonationData donationData = new DonationData();
+            donationData.setAmount(amount);
+            donationData.setDonor(donatingUser.getEmail());
+            donationData.setStreamer(streamingUser.getEmail());
+            donationDataRepository.save(donationData);
+
             return userConverter.convert(donatingUser);
 
         }
@@ -125,10 +136,10 @@ public class UserDataServiceImpl implements UserDataService {
     @Override
     public User createWallet(String name) {
 
-        UserData userData1 = new UserData();
-        userData1.setEmail(name);
-        userDataRepository.save(userData1);
+        UserData userData = new UserData();
+        userData.setEmail(name);
+        userDataRepository.save(userData);
 
-        return userConverter.convert(userData1);
+        return userConverter.convert(userData);
     }
 }

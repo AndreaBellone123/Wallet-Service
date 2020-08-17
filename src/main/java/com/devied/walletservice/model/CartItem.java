@@ -7,7 +7,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class CartItem {
 
     private String id;

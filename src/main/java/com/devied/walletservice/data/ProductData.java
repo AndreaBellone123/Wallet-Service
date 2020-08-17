@@ -8,7 +8,6 @@ import java.util.Locale;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Document("products")
 public class ProductData {
 
