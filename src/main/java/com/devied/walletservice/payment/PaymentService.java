@@ -1,7 +1,7 @@
 package com.devied.walletservice.payment;
 
 import com.devied.walletservice.data.CartData;
-import com.devied.walletservice.errors.UserNotFoundException;
+import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.Checkout;
 import com.paypal.api.payments.Payer;
 import com.paypal.api.payments.Payment;

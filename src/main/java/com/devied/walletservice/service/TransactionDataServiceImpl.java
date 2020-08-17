@@ -3,6 +3,8 @@ package com.devied.walletservice.service;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.TransactionData;
+import com.devied.walletservice.error.ProductNotFoundException;
+import com.devied.walletservice.error.TransactionNotFoundException;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.TransactionDataRepository;
@@ -27,8 +29,8 @@ public class TransactionDataServiceImpl implements TransactionDataService {
     public void saveTransaction(String email, Checkout checkout) throws Exception {
 
         CartData cartData = cartDataService.findCurrent(email);
-        TransactionData transactionData = transactionDataRepository.findTopByEmailOrderByDateDesc(email);
-        ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new Exception("No Products Found"));
+        TransactionData transactionData = transactionDataRepository.findTopByEmailOrderByDateDesc(email).orElseThrow(() -> new TransactionNotFoundException());
+        ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new ProductNotFoundException());
         transactionData.setProductData(productdata);
         transactionData.setPaymentId(checkout.getPaymentId());
         transactionDataRepository.save(transactionData);
@@ -43,13 +45,13 @@ public class TransactionDataServiceImpl implements TransactionDataService {
     }
 
     @Override
-    public TransactionData findByUrl(String url) {
-        return transactionDataRepository.findByUrl(url);
+    public TransactionData findByUrl(String url) throws TransactionNotFoundException {
+        return transactionDataRepository.findByUrl(url).orElseThrow(() -> new TransactionNotFoundException());
     }
 
     @Override
-    public TransactionData findTopByEmailOrderByDateDesc(String email) {
+    public TransactionData findTopByEmailOrderByDateDesc(String email) throws TransactionNotFoundException {
 
-        return transactionDataRepository.findTopByEmailOrderByDateDesc(email);
+        return transactionDataRepository.findTopByEmailOrderByDateDesc(email).orElseThrow(() -> new TransactionNotFoundException());
     }
 }

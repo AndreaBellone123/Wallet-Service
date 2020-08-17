@@ -3,7 +3,8 @@ package com.devied.walletservice.payment;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
-import com.devied.walletservice.errors.UserNotFoundException;
+import com.devied.walletservice.error.ProductNotFoundException;
+import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.repository.ProductDataRepository;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -86,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
             Item item = new Item();
             item.setCurrency(orderDetail.getCurrency());
             item.setName(orderDetail.getId());
-            ProductData productData = productDataRepository.findById(cartItem.getId()).orElseThrow(() -> new Exception("No Products Found"));
+            ProductData productData = productDataRepository.findById(cartItem.getId()).orElseThrow(() -> new ProductNotFoundException());
             item.setPrice(productData.setPrice());
             item.setTax(orderDetail.setTax());
             item.setQuantity(String.valueOf(cartItem.getQuantity()));

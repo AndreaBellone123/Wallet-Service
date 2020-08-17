@@ -4,7 +4,7 @@ import com.devied.walletservice.converter.UserConverter;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
-import com.devied.walletservice.errors.UserNotFoundException;
+import com.devied.walletservice.error.*;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
@@ -38,7 +38,7 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData userData = findByEmail(email);
         CartData cartData = cartDataService.findCurrent(email);
-        ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new Exception("No Products Found"));
+        ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new ProductNotFoundException());
         userData.setBought(userData.getBought() + productdata.getAmount() * cartData.getItemsList().get(0).getQuantity());
         userData.setTotal(userData.getBought() + userData.getEarned());
         userDataRepository.save(userData);
@@ -68,23 +68,15 @@ public class UserDataServiceImpl implements UserDataService {
     }*/
 
     @Override
-    public User getWallet(String email) throws UserNotFoundException {
+    public User getWallet(String email) throws Exception {
 
         UserData userData = findByEmail(email);
 
         if (userData == null) {
 
-            UserData userData1 = new UserData();
-            userData1.setEmail(email);
-            userDataRepository.save(userData1);
-
-            return userConverter.convert(userData1);
-
-        } else {
-
-            return userConverter.convert(userData);
-
+            throw new WalletNotFoundException();
         }
+            return userConverter.convert(userData);
     }
 
     @Override
@@ -94,7 +86,25 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData streamingUser = findByEmail(sid);
 
-        if (donatingUser.getBought() >= amount && userDataRepository.findByEmail(sid) != null && amount > 0 && !donatingUser.getId().equals(streamingUser.getId())) {
+        if(donatingUser.getBought() < amount){
+
+            throw new InsufficientFundsException();
+        }
+
+        if(userDataRepository.findByEmail(sid) == null){
+
+            throw new UserNotFoundException();
+        }
+
+        if(amount <= 0){
+
+            throw new AmountNotAcceptableException();
+        }
+
+        if(donatingUser.getId().equals(streamingUser.getId())){
+
+            throw new SameUserException();
+        }
 
             streamingUser.setEarned(streamingUser.getEarned() + amount);
 
@@ -110,9 +120,15 @@ public class UserDataServiceImpl implements UserDataService {
 
             return userConverter.convert(donatingUser);
 
-        } else {
-
-            throw new Exception("There was an error processing your request!");
         }
+
+    @Override
+    public User createWallet(String name) {
+
+        UserData userData1 = new UserData();
+        userData1.setEmail(name);
+        userDataRepository.save(userData1);
+
+        return userConverter.convert(userData1);
     }
 }

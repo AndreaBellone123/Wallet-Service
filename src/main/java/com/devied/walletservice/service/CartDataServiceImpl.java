@@ -2,6 +2,7 @@ package com.devied.walletservice.service;
 
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
+import com.devied.walletservice.error.CartInForbiddenStatusException;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.repository.CartDataRepository;
@@ -9,7 +10,6 @@ import com.devied.walletservice.util.CartStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +40,7 @@ public class CartDataServiceImpl implements CartDataService {
     public CartData patchCurrent(String email, List<CartItem> cartItems) throws Exception {
 
         CartData cartData = findCurrent(email); // Fixed null pointer exception
+
         if (cartData == null) {
             cartData = new CartData();
             cartData.setEmail(email);
@@ -70,7 +71,7 @@ public class CartDataServiceImpl implements CartDataService {
     @Override
     public void updateState(CartData cartData) throws Exception {
         if (!cartData.getStatus().equals(CartStatus.Prepared)) {
-            throw new Exception("Cart in Forbidden Status");
+            throw new CartInForbiddenStatusException();
         }
 
         cartData.setStatus(CartStatus.Pending);
@@ -82,7 +83,7 @@ public class CartDataServiceImpl implements CartDataService {
 
         CartData cartData = cartDataService.findCurrent(name);
         if (!cartData.getStatus().equals(CartStatus.Pending)) {
-            throw new Exception("Cart in Forbidden Status");
+            throw new CartInForbiddenStatusException();
         }
         cartData.setStatus(CartStatus.Completed);
         cartDataRepository.save(cartData);

@@ -1,7 +1,7 @@
 package com.devied.walletservice.service;
 
 import com.devied.walletservice.data.UserData;
-import com.devied.walletservice.errors.UserNotFoundException;
+import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.User;
 
 public interface UserDataService {
@@ -10,9 +10,11 @@ public interface UserDataService {
 
     void updateWallet(String email) throws Exception;
 
-    //ResponseEntity<User> buyProduct(String email, String pid) throws Exception;
+    // ResponseEntity<User> buyProduct(String email, String pid) throws Exception;
 
-    User getWallet(String email) throws UserNotFoundException;
+    User getWallet(String email) throws Exception;
 
     User donate(String name,String sid,int amount) throws Exception;
+
+    User createWallet(String name);
 }

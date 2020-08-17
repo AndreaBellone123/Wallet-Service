@@ -1,4 +1,4 @@
-package com.devied.walletservice.errors;
+package com.devied.walletservice.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

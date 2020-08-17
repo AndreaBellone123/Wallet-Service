@@ -3,9 +3,11 @@ package com.devied.walletservice.repository;
 import com.devied.walletservice.data.TransactionData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.Optional;
+
 public interface TransactionDataRepository extends MongoRepository<TransactionData,String> {
 
-    TransactionData findByUrl(String url);
+    Optional<TransactionData> findByUrl(String url);
 
-    TransactionData findTopByEmailOrderByDateDesc(String email);
+    Optional<TransactionData> findTopByEmailOrderByDateDesc(String email);
 }
