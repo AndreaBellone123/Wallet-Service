@@ -1,6 +1,8 @@
 package com.devied.walletservice.api;
 
+import com.devied.walletservice.errors.UserNotFoundException;
 import com.devied.walletservice.identity.IdentityRole;
+import com.devied.walletservice.model.Donation;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ public class Wallets {
 
     @GetMapping(produces = "application/json")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User getWallet(Authentication auth) {
+    public User getWallet(Authentication auth) throws UserNotFoundException {
         return userDataService.getWallet(auth.getName());
     }
 
@@ -29,9 +31,9 @@ public class Wallets {
 
     @PatchMapping("/{sid}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User donate(Authentication auth, @PathVariable(value = "sid") String sid, @RequestBody int amount) throws Exception {
+    public User donate(Authentication auth, @PathVariable(value = "sid") String sid, @RequestBody Donation donation) throws Exception {
 
-        return userDataService.donate(auth.getName(), sid, amount);
+        return userDataService.donate(auth.getName(), sid, donation.getAmount());
 
     }
 }

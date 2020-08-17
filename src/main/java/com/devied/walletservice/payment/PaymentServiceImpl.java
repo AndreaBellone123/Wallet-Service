@@ -3,6 +3,7 @@ package com.devied.walletservice.payment;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
+import com.devied.walletservice.errors.UserNotFoundException;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.repository.ProductDataRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -39,12 +41,12 @@ public class PaymentServiceImpl implements PaymentService {
     ProductDataRepository productDataRepository;
 
 
-    public Payer getPayerInformation(String email) {
+    public Payer getPayerInformation(String email) throws UserNotFoundException {
 
         Payer payer = new Payer();
         payer.setPaymentMethod("paypal");
         PayerInfo payerInfo = new PayerInfo();
-        UserData userData = userDataRepository.findByEmail(email);
+        UserData userData = userDataRepository.findByEmail(email).orElseThrow( () -> new UserNotFoundException());
 
         payerInfo.setEmail(userData.getEmail());
         payer.setPayerInfo(payerInfo);

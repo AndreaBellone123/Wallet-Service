@@ -4,6 +4,7 @@ import com.devied.walletservice.converter.UserConverter;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
+import com.devied.walletservice.errors.UserNotFoundException;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
@@ -28,17 +29,17 @@ public class UserDataServiceImpl implements UserDataService {
     UserConverter userConverter;
 
     @Override
-    public UserData findByEmail(String email) {
-        return userDataRepository.findByEmail(email);
+    public UserData findByEmail(String email) throws UserNotFoundException {
+        return userDataRepository.findByEmail(email).orElseThrow( () -> new UserNotFoundException());
     }
 
     @Override
     public void updateWallet(String email) throws Exception {
 
-        UserData userData = userDataRepository.findByEmail(email);
+        UserData userData = findByEmail(email);
         CartData cartData = cartDataService.findCurrent(email);
         ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new Exception("No Products Found"));
-        userData.setBought(userData.getBought() + productdata.getAmount());
+        userData.setBought(userData.getBought() + productdata.getAmount() * cartData.getItemsList().get(0).getQuantity());
         userData.setTotal(userData.getBought() + userData.getEarned());
         userDataRepository.save(userData);
     }
@@ -67,9 +68,9 @@ public class UserDataServiceImpl implements UserDataService {
     }*/
 
     @Override
-    public User getWallet(String email) {
+    public User getWallet(String email) throws UserNotFoundException {
 
-        UserData userData = userDataRepository.findByEmail(email);
+        UserData userData = findByEmail(email);
 
         if (userData == null) {
 
@@ -89,9 +90,9 @@ public class UserDataServiceImpl implements UserDataService {
     @Override
     public User donate(String name, String sid, int amount) throws Exception {
 
-        UserData donatingUser = userDataRepository.findByEmail(name);
+        UserData donatingUser = findByEmail(name);
 
-        UserData streamingUser = userDataRepository.findByEmail(sid);
+        UserData streamingUser = findByEmail(sid);
 
         if (donatingUser.getBought() >= amount && userDataRepository.findByEmail(sid) != null && amount > 0 && !donatingUser.getId().equals(streamingUser.getId())) {
 
