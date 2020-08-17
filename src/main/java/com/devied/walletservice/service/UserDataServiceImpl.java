@@ -2,10 +2,12 @@ package com.devied.walletservice.service;
 
 import com.devied.walletservice.converter.UserConverter;
 import com.devied.walletservice.data.CartData;
+import com.devied.walletservice.data.DonationData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
 import com.devied.walletservice.model.User;
+import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,14 @@ public class UserDataServiceImpl implements UserDataService {
     ProductDataRepository productDataRepository;
 
     @Autowired
+    DonationDataRepository donationDataRepository;
+
+    @Autowired
     UserConverter userConverter;
 
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
-        return userDataRepository.findByEmail(email).orElseThrow( () -> new UserNotFoundException());
+        return userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
@@ -38,7 +43,7 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData userData = findByEmail(email);
         CartData cartData = cartDataService.findCurrent(email);
-        ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new ProductNotFoundException());
+        ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(ProductNotFoundException::new);
         userData.setBought(userData.getBought() + productdata.getAmount() * cartData.getItemsList().get(0).getQuantity());
         userData.setTotal(userData.getBought() + userData.getEarned());
         userDataRepository.save(userData);
@@ -117,6 +122,12 @@ public class UserDataServiceImpl implements UserDataService {
             userDataRepository.save(streamingUser);
 
             userDataRepository.save(donatingUser);
+
+            DonationData donationData = new DonationData();
+            donationData.setAmount(amount);
+            donationData.setDonor(donatingUser.getEmail());
+            donationData.setStreamer(streamingUser.getEmail());
+            donationDataRepository.save(donationData);
 
             return userConverter.convert(donatingUser);
 

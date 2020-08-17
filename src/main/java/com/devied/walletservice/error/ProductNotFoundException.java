@@ -1,9 +1,10 @@
 package com.devied.walletservice.error;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.devied.walletservice.util.Error;
 
-@ResponseStatus(code = HttpStatus.NOT_FOUND,reason = "Product not found!")
-public class ProductNotFoundException extends Exception {
+public class ProductNotFoundException extends BaseError {
 
+    public ProductNotFoundException() {
+        super(Error.err_002);
+    }
 }
