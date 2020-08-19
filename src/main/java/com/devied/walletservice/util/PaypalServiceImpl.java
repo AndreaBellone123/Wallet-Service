@@ -1,5 +1,7 @@
 package com.devied.walletservice.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,8 @@ public class PaypalServiceImpl implements PaypalService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public String getEmail() {
+    public PaypalUser getEmail() throws JsonProcessingException {
 
-        PaypalUser paypalUser;
         String url = "https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1";
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth("A23AAFNd7CEl5VRve5ATTutVKgGJSjM5hrtQxwPKBbFyVvxx4XRXtzIhqfr_896hl8CxAIdbr4jRV47AyEh6omSN3wozI9VbQ");
@@ -34,13 +35,13 @@ public class PaypalServiceImpl implements PaypalService {
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
-
             System.out.println("Request Successful.");
             System.out.println(response.getBody());
-            return response.getBody();
-
         }
 
-        return String.valueOf(response.getStatusCode());
+        PaypalUser paypalUser1 = new ObjectMapper().readValue(response.getBody(), PaypalUser.class);
+
+        return paypalUser1;
+
     }
 }

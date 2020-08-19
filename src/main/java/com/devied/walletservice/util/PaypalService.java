@@ -1,6 +1,8 @@
 package com.devied.walletservice.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public interface PaypalService {
 
-    String getEmail();
+    PaypalUser getEmail() throws JsonProcessingException;
 }

@@ -4,6 +4,8 @@ import com.devied.walletservice.identity.IdentityRole;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.service.UserDataService;
 import com.devied.walletservice.util.PaypalServiceImpl;
+import com.devied.walletservice.util.PaypalUser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -40,7 +42,7 @@ public class Wallets {
 
     @GetMapping(path = "/getEmail")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public String getEmail() {
+    public PaypalUser getEmail() throws JsonProcessingException {
         return restServiceImpl.getEmail();
     }
 }

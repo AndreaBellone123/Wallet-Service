@@ -9,5 +9,5 @@ import java.io.Serializable;
 public class PaypalUser implements Serializable {
 
     private String user_id;
-    private String [] emails;
+    private Email[] emails;
 }
