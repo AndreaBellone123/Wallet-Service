@@ -33,7 +33,6 @@ public class UserDataServiceImpl implements UserDataService {
     @Autowired
     UserConverter userConverter;
 
-
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
         return userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
@@ -139,6 +138,9 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData userData = new UserData();
         userData.setEmail(name);
+
+
+
         userDataRepository.save(userData);
 
         return userConverter.convert(userData);

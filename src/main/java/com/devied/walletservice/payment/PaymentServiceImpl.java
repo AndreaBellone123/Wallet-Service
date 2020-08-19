@@ -27,6 +27,10 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String CLIENT_ID = "AVNSlr4OhE8kAJVt82ygsLq7yD64O8eYIwP2n1Q790DtcCzkE1-4uyfQrtR1u1Ysz_Hlaz7HdikaIFoQ";
     private static final String CLIENT_SECRET = "EK7hItd2kMKDv8zJ4-NFxSCk1myGYuP-JHXNj4SlqUGB42krSotKiHOm_jixeR9bjfp4TfCVu1k3PKbs";
     private static final String MODE = "sandbox";
+    // https://www.sandbox.paypal.com/connect/?flowEntry=lg&client_id=AeWzs5E743fXTvTCNrRzzaMky1M1DxJ_Pb8xcEj_-hnHnIqiDmuC24YBILsqXdQef-pjp7MFFlhuK31N&response_type=code&scope=email&redirect_uri=https%253A%252F%252Flive.sandbox.devied.com&newUI=Y
+    // C21AAFJ0hSxvjns4qX_nPFo07MSTr0SntFJrLzOuMzJhzyD8oEfs0Fnm99GkZ4-ECLyHwTj_qlbm9msgMpjG0Zu985bShcKsg - AUTH CODE
+    // A23AAFNd7CEl5VRve5ATTutVKgGJSjM5hrtQxwPKBbFyVvxx4XRXtzIhqfr_896hl8CxAIdbr4jRV47AyEh6omSN3wozI9VbQ - ACCESS TOKEN
+    // R23AAFppJy0tcdkB0FOcVbZ4zUsd9WttP06T7ATVEh03hWyxQmUN0M7fa_5ovp-IDkE3xFIBUTq9SP8lIgZmEKXGs7pkQdxAuopAxTCl0oEeD2rdxM4_-1_2iooR-VbHrdTgN9X3CtQbxWiUmf1yw - REFRESH TOKEN
 
     @Autowired
     UserDataRepository userDataRepository;

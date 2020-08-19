@@ -4,6 +4,8 @@ import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.User;
 
+import java.net.URISyntaxException;
+
 public interface UserDataService {
 
     UserData findByEmail(String email) throws UserNotFoundException;
@@ -17,4 +19,5 @@ public interface UserDataService {
     User donate(String name,String sid,int amount) throws Exception;
 
     User createWallet(String name);
+
 }
