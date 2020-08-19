@@ -1,12 +1,16 @@
 package com.devied.walletservice.api;
 
 import com.devied.walletservice.identity.IdentityRole;
+import com.devied.walletservice.model.PaymentMethod;
+import com.devied.walletservice.model.PaypalUser;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/wallets")
@@ -23,7 +27,7 @@ public class Wallets {
 
     @PostMapping(produces = "application/json",consumes = "application/json" )
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User createWallet(Authentication auth){
+    public User createWallet(Authentication auth) throws IOException {
         return userDataService.createWallet(auth.getName());
     }
 

@@ -6,6 +6,7 @@ import com.devied.walletservice.data.DonationData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
+import com.devied.walletservice.model.PaypalUser;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
@@ -13,6 +14,12 @@ import com.devied.walletservice.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Service
 @Transactional
@@ -135,9 +142,17 @@ public class UserDataServiceImpl implements UserDataService {
         }
 
     @Override
-    public User createWallet(String name) {
+    public User createWallet(String name) throws IOException {
 
         UserData userData = new UserData();
+        URL url = new URL("https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Authorization", "user.getAccessToken()");
+        int status = con.getResponseCode();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+
         userData.setEmail(name);
         userDataRepository.save(userData);
 

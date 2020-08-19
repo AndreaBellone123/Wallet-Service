@@ -25,4 +25,5 @@ public interface PaymentService {
     Checkout initialCheckout(String name, CartData cartData) throws Exception;
 
     void completeCheckout(String name, Checkout checkout) throws Exception;
+
 }

@@ -9,10 +9,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ErrorEntity {
 
-    private int code;
+    private String code;
     private String message;
 
-    public ErrorEntity(int code,String message){
+    public ErrorEntity(String code,String message){
 
         this.code = code;
         this.message = message;

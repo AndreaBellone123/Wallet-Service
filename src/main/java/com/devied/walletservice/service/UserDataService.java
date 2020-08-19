@@ -2,7 +2,10 @@ package com.devied.walletservice.service;
 
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.UserNotFoundException;
+import com.devied.walletservice.model.PaypalUser;
 import com.devied.walletservice.model.User;
+
+import java.io.IOException;
 
 public interface UserDataService {
 
@@ -16,5 +19,5 @@ public interface UserDataService {
 
     User donate(String name,String sid,int amount) throws Exception;
 
-    User createWallet(String name);
+    User createWallet(String name) throws IOException;
 }

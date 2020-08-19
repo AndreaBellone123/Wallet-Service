@@ -21,7 +21,7 @@ dependencies {
     implementation 'org.keycloak:keycloak-spring-boot-starter:11.0.+'
     implementation 'org.keycloak:keycloak-spring-security-adapter:11.0.+'
     compile 'com.paypal.sdk:rest-api-sdk:+'
-
+    compile group: 'com.paypal.sdk', name: 'payouts-sdk', version: '+'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

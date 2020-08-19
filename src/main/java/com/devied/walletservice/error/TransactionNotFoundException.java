@@ -3,6 +3,6 @@ import com.devied.walletservice.util.Error;
 
 public class TransactionNotFoundException extends BaseError {
     public TransactionNotFoundException() {
-        super(Error.err_003);
+        super(Error.err_103);
     }
 }

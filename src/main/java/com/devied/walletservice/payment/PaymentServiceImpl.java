@@ -160,7 +160,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void completeCheckout(String name, Checkout checkout) throws Exception {
 
-        PaymentExecution paymentExecution = new PaymentExecution();
+        PaymentExecution paymentExecution= new PaymentExecution();
         paymentExecution.setPayerId(checkout.getPayerId());
 
         Payment payment = new Payment().setId(checkout.getPaymentId());

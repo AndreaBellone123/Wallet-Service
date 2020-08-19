@@ -5,6 +5,6 @@ import com.devied.walletservice.util.Error;
 public class UserNotFoundException extends BaseError{
 
     public UserNotFoundException() {
-        super(Error.err_001);
+        super(Error.err_101);
     }
 }
