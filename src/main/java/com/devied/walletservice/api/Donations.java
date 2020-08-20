@@ -21,4 +21,6 @@ public class Donations {
     public User donate(Authentication auth, @PathVariable(value = "sid") String sid, @RequestBody Donation donation) throws Exception {
         return userDataService.donate(auth.getName(), sid, donation.getAmount());
     }
+
+
 }

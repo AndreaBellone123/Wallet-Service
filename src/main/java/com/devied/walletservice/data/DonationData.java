@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.Date;
 
 @Document("donations")
 @Getter
@@ -14,5 +15,6 @@ public class DonationData {
     private int amount;
     private String streamer;
     private String donor;
+    private Date date = new Date();
 
 }

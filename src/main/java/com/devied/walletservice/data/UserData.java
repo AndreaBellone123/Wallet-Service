@@ -17,5 +17,9 @@ public class UserData {
     private int earned;
     private int bought;
     private int total;
+<<<<<<< HEAD
     private PaymentMethod[] paymentMethod;
+=======
+    private String paypal_email;
+>>>>>>> 74e501d269eb6226eda607a69ecdfeac5a81a2cf
 }

@@ -3,7 +3,6 @@ package com.devied.walletservice.data;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.util.CartStatus;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
