@@ -12,6 +12,7 @@ public class UserConverterImpl implements UserConverter {
     public User convert(UserData current) {
 
         User user = new User();
+        user.setPaypalEmail(current.getPaypalEmail());
         user.setEmail(current.getEmail());
         user.setBought(current.getBought());
         user.setEarned(current.getEarned());

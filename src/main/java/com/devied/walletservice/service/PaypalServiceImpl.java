@@ -1,8 +1,12 @@
-package com.devied.walletservice.util;
+package com.devied.walletservice.service;
 
+import com.devied.walletservice.converter.UserConverter;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.UserNotFoundException;
+import com.devied.walletservice.model.User;
 import com.devied.walletservice.repository.UserDataRepository;
+import com.devied.walletservice.util.Email;
+import com.devied.walletservice.util.PaypalUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -21,11 +25,14 @@ public class PaypalServiceImpl implements PaypalService {
     @Autowired
     UserDataRepository userDataRepository;
 
+    @Autowired
+    UserConverter userConverter;
+
     public PaypalServiceImpl(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public PaypalUser getUser(String token,String username) throws JsonProcessingException, UserNotFoundException {
+    public User getUser(String token, String username) throws JsonProcessingException, UserNotFoundException {
 
         String url = "https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1";
         HttpHeaders headers = new HttpHeaders();
@@ -53,9 +60,15 @@ public class PaypalServiceImpl implements PaypalService {
 
         Email email = paypalUser1.getEmails().get(0);
         UserData userData = userDataRepository.findByEmail(username).orElseThrow(UserNotFoundException::new);
+        if (userData == null){
+            UserData userData1 = new UserData();
+            userData1.setEmail(username);
+            userData1.setPaypalEmail(email.getValue());
+        }
         userData.setPaypalEmail(email.getValue());
 
         userDataRepository.save(userData);
-        return paypalUser1;
+
+        return userConverter.convert(userData);
     }
 }

@@ -9,6 +9,7 @@ import lombok.Setter;
 public class User {
 
     private String email;
+    private String paypalEmail;
     private int earned;
     private int bought;
     private int total;

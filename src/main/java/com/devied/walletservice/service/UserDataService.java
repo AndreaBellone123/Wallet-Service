@@ -17,6 +17,4 @@ public interface UserDataService {
 
     User donate(String name,String sid,int amount) throws Exception;
 
-    User createWallet(String name);
-
 }

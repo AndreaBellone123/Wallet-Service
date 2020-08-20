@@ -6,17 +6,21 @@ import com.devied.walletservice.data.DonationData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
+import com.devied.walletservice.event.CustomSpringEvent;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @Transactional
+@Component
 public class UserDataServiceImpl implements UserDataService {
 
     @Autowired
@@ -33,6 +37,10 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Autowired
     UserConverter userConverter;
+
+    @Autowired
+    ApplicationEventPublisher applicationEventPublisher;
+
 
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
@@ -82,7 +90,7 @@ public class UserDataServiceImpl implements UserDataService {
 
             throw new WalletNotFoundException();
         }
-            return userConverter.convert(userData);
+        return userConverter.convert(userData);
     }
 
     @Override
@@ -92,57 +100,48 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData streamingUser = findByEmail(sid);
 
-        if(donatingUser.getBought() < amount){
+        if (donatingUser.getBought() < amount) {
 
             throw new InsufficientFundsException();
         }
 
-        if(userDataRepository.findByEmail(sid) == null){
+        if (userDataRepository.findByEmail(sid) == null) {
 
             throw new UserNotFoundException();
         }
 
-        if(amount <= 0){
+        if (amount <= 0) {
 
             throw new AmountNotAcceptableException();
         }
 
-        if(donatingUser.getId().equals(streamingUser.getId())){
+        if (donatingUser.getId().equals(streamingUser.getId())) {
 
             throw new SameUserException();
         }
 
-            streamingUser.setEarned(streamingUser.getEarned() + amount);
+        streamingUser.setEarned(streamingUser.getEarned() + amount);
 
-            donatingUser.setBought(donatingUser.getBought() - amount);
+        donatingUser.setBought(donatingUser.getBought() - amount);
 
-            donatingUser.setTotal(donatingUser.getBought() + donatingUser.getEarned());
+        donatingUser.setTotal(donatingUser.getBought() + donatingUser.getEarned());
 
-            streamingUser.setTotal(streamingUser.getBought() + streamingUser.getEarned());
+        streamingUser.setTotal(streamingUser.getBought() + streamingUser.getEarned());
 
-            userDataRepository.save(streamingUser);
+        userDataRepository.save(streamingUser);
 
-            userDataRepository.save(donatingUser);
+        userDataRepository.save(donatingUser);
 
-            DonationData donationData = new DonationData();
-            donationData.setAmount(amount);
-            donationData.setDonor(donatingUser.getEmail());
-            donationData.setStreamer(streamingUser.getEmail());
-            donationDataRepository.save(donationData);
+        DonationData donationData = new DonationData();
+        donationData.setAmount(amount);
+        donationData.setDonor(donatingUser.getEmail());
+        donationData.setStreamer(streamingUser.getEmail());
+        donationDataRepository.save(donationData);
 
-            return userConverter.convert(donatingUser);
+        CustomSpringEvent customSpringEvent = new CustomSpringEvent(this,donationData);
+        applicationEventPublisher.publishEvent(customSpringEvent);
 
-        }
+        return userConverter.convert(donatingUser);
 
-    @Override
-    public User createWallet(String name)  {
-
-        UserData userData = new UserData();
-
-        userData.setEmail(name);
-
-        userDataRepository.save(userData);
-
-        return userConverter.convert(userData);
     }
 }
