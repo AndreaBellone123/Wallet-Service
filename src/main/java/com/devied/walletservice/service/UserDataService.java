@@ -15,6 +15,7 @@ public interface UserDataService {
 
     User getWallet(String email) throws Exception;
 
-    User donate(String name,String sid,int amount) throws Exception;
+    User donate(String email, String sid, int amount) throws Exception;
 
+    void cashOut(String email) throws UserNotFoundException;
 }

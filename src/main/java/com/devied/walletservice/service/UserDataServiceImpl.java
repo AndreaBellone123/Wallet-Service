@@ -8,11 +8,15 @@ import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
 import com.devied.walletservice.event.CustomSpringEvent;
 import com.devied.walletservice.model.User;
+import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +44,6 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
-
 
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
@@ -94,9 +97,9 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public User donate(String name, String sid, int amount) throws Exception {
+    public User donate(String email, String sid, int amount) throws Exception {
 
-        UserData donatingUser = findByEmail(name);
+        UserData donatingUser = findByEmail(email);
 
         UserData streamingUser = findByEmail(sid);
 
@@ -143,5 +146,18 @@ public class UserDataServiceImpl implements UserDataService {
 
         return userConverter.convert(donatingUser);
 
+    }
+
+    @Override
+    public void cashOut(String email) throws UserNotFoundException {
+        //TODO richiamare nostro bearer token
+        String url = "https://api.sandbox.paypal.com/v1/oauth2/token";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth();//TODO passare client id e secret e prendere access token da mettere nella seconda HTTP
+        //TODO CREARE PAYOUTDATA
+        //TODO HTTP REQUEST POST https://api.sandbox.paypal.com/v1/payments/payouts PAYOUT DATA e salvare in repository
+
+        UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        userData.setEarned(userData.getEarned() - 1000);
     }
 }
