@@ -17,6 +17,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payer payer = new Payer();
         payer.setPaymentMethod("paypal");
         PayerInfo payerInfo = new PayerInfo();
-        UserData userData = userDataRepository.findByEmail(email).orElseThrow( () -> new UserNotFoundException());
+        UserData userData = userDataRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
 
         payerInfo.setEmail(userData.getEmail());
         payer.setPayerInfo(payerInfo);
@@ -164,7 +165,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void completeCheckout(String name, Checkout checkout) throws Exception {
 
-        PaymentExecution paymentExecution= new PaymentExecution();
+        PaymentExecution paymentExecution = new PaymentExecution();
         paymentExecution.setPayerId(checkout.getPayerId());
 
         Payment payment = new Payment().setId(checkout.getPaymentId());
@@ -176,4 +177,5 @@ public class PaymentServiceImpl implements PaymentService {
         cartDataService.finalState(name);
 
     }
+
 }

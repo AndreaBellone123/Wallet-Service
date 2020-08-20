@@ -5,5 +5,5 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface PaypalService {
 
-    PaypalUser getEmail() throws JsonProcessingException, UserNotFoundException;
+    PaypalUser getUser(String token,String email) throws JsonProcessingException, UserNotFoundException;
 }

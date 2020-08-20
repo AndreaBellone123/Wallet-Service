@@ -12,6 +12,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import java.util.List;
 
 public interface PaymentService {
+
     Payer getPayerInformation(String email) throws UserNotFoundException;
 
     RedirectUrls getRedirectURLs();
