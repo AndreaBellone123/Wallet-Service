@@ -29,7 +29,7 @@ public class PaypalServiceImpl implements PaypalService {
 
         String url = "https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1";
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth("A23AAFo57gHgBXa3lr-WaBauDAVGWnkbuXqu_rs9Q7vH-OJh1QTzItLHpL2xXFijPZ-e8cSpga0-57jwk5L_G4pqlFiR48-Aw");
+        headers.setBearerAuth(token);
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity request = new HttpEntity(headers);
 
