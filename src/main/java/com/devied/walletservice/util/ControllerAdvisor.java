@@ -19,9 +19,11 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, errorEntity ,new HttpHeaders(),  HttpStatus.CONFLICT, request);
     }
 
-//    @ExceptionHandler(value = {Exception.class})
-//    protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
-//        ErrorEntity errorEntity = new ErrorEntity(Error.err_000.getCode(),Error.err_000.getMessage());
-//        return handleExceptionInternal(ex, errorEntity ,new HttpHeaders(),  HttpStatus.CONFLICT, request);
-//    }
+/*
+    @ExceptionHandler(value = {Exception.class})
+    protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
+        ErrorEntity errorEntity = new ErrorEntity(Error.err_000.getCode(),Error.err_000.getMessage());
+        return handleExceptionInternal(ex, errorEntity ,new HttpHeaders(),  HttpStatus.CONFLICT, request);
+    }
+*/
 }

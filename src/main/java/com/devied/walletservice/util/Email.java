@@ -1,5 +1,6 @@
 package com.devied.walletservice.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,8 @@ import lombok.Setter;
 @Setter
 public class Email {
 
+    @JsonIgnore
+    private String user_id;
     private String value;
     private boolean primary;
     private boolean confirmed;
@@ -19,4 +22,6 @@ public class Email {
                 ", confirmed=" + confirmed +
                 '}';
     }
+
+
 }

@@ -17,4 +17,5 @@ public class UserData {
     private int earned;
     private int bought;
     private int total;
+    private String paypal_email;
 }
