@@ -6,6 +6,7 @@ import com.devied.walletservice.repository.UserDataRepository;
 import com.devied.walletservice.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +18,7 @@ public class AnnotationDrivenListener {
     @Autowired
     UserDataService userDataService;
 
+    @Async
     @EventListener
     public void handleContextStart(CustomSpringEvent customSpringEvent) throws UserNotFoundException {
 

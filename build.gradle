@@ -20,6 +20,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.keycloak:keycloak-spring-boot-starter:11.0.+'
     implementation 'org.keycloak:keycloak-spring-security-adapter:11.0.+'
+    implementation 'org.testng:testng:6.14.3'
+    implementation 'org.testng:testng:6.14.3'
     compile 'com.paypal.sdk:rest-api-sdk:+'
     compile group: 'com.paypal.sdk', name: 'payouts-sdk', version: '+'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '+'
