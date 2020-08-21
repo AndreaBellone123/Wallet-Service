@@ -1,7 +1,6 @@
 package com.devied.walletservice.event;
 
 import com.devied.walletservice.data.DonationData;
-import com.devied.walletservice.model.Donation;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;

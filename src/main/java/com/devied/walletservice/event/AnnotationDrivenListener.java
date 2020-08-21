@@ -28,5 +28,7 @@ public class AnnotationDrivenListener {
         if (userData.getEarned() >= 1000){
             userDataService.DeviedCashOut(userData.getEmail());
         }
+
+        System.out.println(Thread.currentThread().getName());
     }
 }

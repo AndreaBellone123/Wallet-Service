@@ -7,28 +7,16 @@ import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
 import com.devied.walletservice.event.CustomSpringEvent;
-import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
-import com.paypal.http.HttpResponse;
-import com.paypal.http.exceptions.HttpException;
-import com.paypal.payouts.*;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.auth.Credentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-
 
 
 @Service
@@ -155,6 +143,8 @@ public class UserDataServiceImpl implements UserDataService {
 
         CustomSpringEvent customSpringEvent = new CustomSpringEvent(this, donationData);
         applicationEventPublisher.publishEvent(customSpringEvent);
+
+        System.out.println(Thread.currentThread().getName());
 
         return userConverter.convert(donatingUser);
 

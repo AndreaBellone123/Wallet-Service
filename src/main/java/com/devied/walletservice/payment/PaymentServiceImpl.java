@@ -12,6 +12,7 @@ import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import com.devied.walletservice.service.CartDataService;
 import com.devied.walletservice.service.TransactionDataService;
+import com.devied.walletservice.util.YAMLConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
@@ -19,7 +20,6 @@ import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +28,6 @@ import java.util.List;
 @Transactional
 public class PaymentServiceImpl implements PaymentService {
 
-    private static final String CLIENT_ID = "AVNSlr4OhE8kAJVt82ygsLq7yD64O8eYIwP2n1Q790DtcCzkE1-4uyfQrtR1u1Ysz_Hlaz7HdikaIFoQ";
-    private static final String CLIENT_SECRET = "EK7hItd2kMKDv8zJ4-NFxSCk1myGYuP-JHXNj4SlqUGB42krSotKiHOm_jixeR9bjfp4TfCVu1k3PKbs";
-    private static final String MODE = "sandbox";
     // https://www.sandbox.paypal.com/connect/?flowEntry=lg&client_id=AeWzs5E743fXTvTCNrRzzaMky1M1DxJ_Pb8xcEj_-hnHnIqiDmuC24YBILsqXdQef-pjp7MFFlhuK31N&response_type=code&scope=email&redirect_uri=https%253A%252F%252Flive.sandbox.devied.com&newUI=Y
 
     @Autowired
@@ -48,13 +45,16 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     ProductDataRepository productDataRepository;
 
+    @Autowired
+    YAMLConfig yamlConfig;
+
 
     public Payer getPayerInformation(String email) throws UserNotFoundException {
 
         Payer payer = new Payer();
         payer.setPaymentMethod("paypal");
         PayerInfo payerInfo = new PayerInfo();
-        UserData userData = userDataRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
+        UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
         payerInfo.setEmail(userData.getEmail());
         payer.setPayerInfo(payerInfo);
@@ -94,7 +94,7 @@ public class PaymentServiceImpl implements PaymentService {
             Item item = new Item();
             item.setCurrency(orderDetail.getCurrency());
             item.setName(orderDetail.getId());
-            ProductData productData = productDataRepository.findById(cartItem.getId()).orElseThrow(() -> new ProductNotFoundException());
+            ProductData productData = productDataRepository.findById(cartItem.getId()).orElseThrow(ProductNotFoundException::new);
             item.setPrice(productData.setPrice());
             item.setTax(orderDetail.setTax());
             item.setQuantity(String.valueOf(cartItem.getQuantity()));
@@ -127,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     public Payment getPaymentDetails(String paymentId) throws PayPalRESTException {
-        APIContext apiContext = new APIContext(CLIENT_ID, CLIENT_SECRET, MODE);
+        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
         return Payment.get(apiContext, paymentId);
     }
 
@@ -145,7 +145,7 @@ public class PaymentServiceImpl implements PaymentService {
         requestPayment.setRedirectUrls(redirectUrls);
         requestPayment.setPayer(payer);
         requestPayment.setIntent("authorize");
-        APIContext apiContext = new APIContext(CLIENT_ID, CLIENT_SECRET, MODE);
+        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
         Payment approvedPayment = null;
 
         try {
@@ -173,7 +173,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment payment = new Payment().setId(checkout.getPaymentId());
 
-        APIContext apiContext = new APIContext(CLIENT_ID, CLIENT_SECRET, MODE);
+        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
 
         payment.execute(apiContext, paymentExecution);
 
