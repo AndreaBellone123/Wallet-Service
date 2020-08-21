@@ -1,7 +1,7 @@
 package com.devied.walletservice.data;
 
+import com.devied.walletservice.model.Payout;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,5 +19,6 @@ public class TransactionData {
     private ProductData productData;
     private Date date = new Date();
     private String url;
+    private Payout payout;
 
 }

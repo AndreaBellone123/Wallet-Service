@@ -7,19 +7,28 @@ import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
 import com.devied.walletservice.event.CustomSpringEvent;
+import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
+import com.paypal.http.HttpResponse;
+import com.paypal.http.exceptions.HttpException;
+import com.paypal.payouts.*;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.http.auth.Credentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+
 
 
 @Service
@@ -44,6 +53,9 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    PaymentService paymentService;
 
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
@@ -141,7 +153,7 @@ public class UserDataServiceImpl implements UserDataService {
         donationData.setStreamer(streamingUser.getEmail());
         donationDataRepository.save(donationData);
 
-        CustomSpringEvent customSpringEvent = new CustomSpringEvent(this,donationData);
+        CustomSpringEvent customSpringEvent = new CustomSpringEvent(this, donationData);
         applicationEventPublisher.publishEvent(customSpringEvent);
 
         return userConverter.convert(donatingUser);
@@ -149,15 +161,9 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public void cashOut(String email) throws UserNotFoundException {
-        //TODO richiamare nostro bearer token
-        String url = "https://api.sandbox.paypal.com/v1/oauth2/token";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth();//TODO passare client id e secret e prendere access token da mettere nella seconda HTTP
-        //TODO CREARE PAYOUTDATA
-        //TODO HTTP REQUEST POST https://api.sandbox.paypal.com/v1/payments/payouts PAYOUT DATA e salvare in repository
-
-        UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-        userData.setEarned(userData.getEarned() - 1000);
+    public void DeviedCashOut(String email) throws UserNotFoundException {
+        //TODO metodo di pagamento controllo
+        paymentService.PaypalCashOut(email);
     }
+
 }

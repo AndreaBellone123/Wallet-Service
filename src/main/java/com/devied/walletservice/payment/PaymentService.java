@@ -3,6 +3,8 @@ package com.devied.walletservice.payment;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.Checkout;
+import com.devied.walletservice.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.paypal.api.payments.Payer;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.RedirectUrls;
@@ -26,5 +28,9 @@ public interface PaymentService {
     Checkout initialCheckout(String name, CartData cartData) throws Exception;
 
     void completeCheckout(String name, Checkout checkout) throws Exception;
+
+    User getPaypalUser(String token, String email) throws JsonProcessingException, UserNotFoundException;
+
+    void PaypalCashOut(String email) throws UserNotFoundException;
 
 }

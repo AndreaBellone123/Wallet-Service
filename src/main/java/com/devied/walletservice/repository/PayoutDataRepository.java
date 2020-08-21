@@ -1,7 +1,7 @@
 package com.devied.walletservice.repository;
 
-import com.devied.walletservice.data.PayoutData;
+import com.devied.walletservice.model.Payout;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface PayoutDataRepository extends MongoRepository<PayoutData,String> {
+public interface PayoutDataRepository extends MongoRepository<Payout,String> {
 }

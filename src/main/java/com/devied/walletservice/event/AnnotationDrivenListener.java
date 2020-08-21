@@ -19,11 +19,12 @@ public class AnnotationDrivenListener {
 
     @EventListener
     public void handleContextStart(CustomSpringEvent customSpringEvent) throws UserNotFoundException {
+
         System.out.println("Success");
         UserData userData = userDataRepository.findByEmail(customSpringEvent.getDonationData().getStreamer()).orElseThrow(UserNotFoundException::new);
+
         if (userData.getEarned() >= 1000){
-            //TODO CashOut in UserdataService
-            userDataService.cashOut(userData.getEmail());
+            userDataService.DeviedCashOut(userData.getEmail());
         }
     }
 }

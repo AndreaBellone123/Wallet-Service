@@ -1,5 +1,6 @@
-package com.devied.walletservice.util;
+package com.devied.walletservice.payment;
 
+import com.devied.walletservice.util.Email;
 import lombok.Getter;
 import lombok.Setter;
 

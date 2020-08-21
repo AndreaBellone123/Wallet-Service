@@ -12,3 +12,6 @@ keycloak:
   resource: ${SERVICES_ACCOUNT_CLIENT:wallet}
   bearer-only: ${SERVICES_ACCOUNT_BEARER:true}
   principal-attribute: ${SERVICES_ACCOUNT_PRINCIPAL_ATTRIBUTE:preferred_username}
+
+# PAYPAL
+
