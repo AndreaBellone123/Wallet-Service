@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
 @Getter
 @Setter
 @Document("users")
@@ -20,4 +19,14 @@ public class UserData {
     private int total;
     private PaymentMethod[] paymentMethod;
     private String paypalEmail;
+
+    public void setBought(int bought) {
+        this.bought = bought;
+        this.total = this.bought + this.earned;
+    }
+
+    public void setEarned(int earned) {
+        this.earned = earned;
+        this.total = this.bought + this.earned;
+    }
 }

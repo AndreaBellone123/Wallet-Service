@@ -103,7 +103,7 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData streamingUser = findByEmail(sid);
 
-        if (donatingUser.getBought() < amount) {
+        if (donatingUser.getTotal() < amount) {
 
             throw new InsufficientFundsException();
         }
@@ -123,13 +123,17 @@ public class UserDataServiceImpl implements UserDataService {
             throw new SameUserException();
         }
 
-        streamingUser.setEarned(streamingUser.getEarned() + amount);
+        if(donatingUser.getBought() < amount) {
 
-        donatingUser.setBought(donatingUser.getBought() - amount);
+            streamingUser.setEarned(streamingUser.getEarned() + amount);
 
-        donatingUser.setTotal(donatingUser.getBought() + donatingUser.getEarned());
+            donatingUser.setEarned(donatingUser.getEarned() - amount);
+        } else {
 
-        streamingUser.setTotal(streamingUser.getBought() + streamingUser.getEarned());
+            streamingUser.setEarned(streamingUser.getEarned() + amount);
+
+            donatingUser.setBought(donatingUser.getBought() - amount);
+        }
 
         userDataRepository.save(streamingUser);
 
