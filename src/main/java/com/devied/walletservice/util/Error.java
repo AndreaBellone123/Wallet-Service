@@ -9,6 +9,8 @@ public enum Error {
     err_102("Product Not Found", 404),
     err_103("Transaction Not Found", 404),
     err_104("Wallet Not Found", 404),
+    err_105("Payment Method Not Found", 404),
+    err_106("Paypal User Not Found", 404),
     err_200("Cannot donate tokens to yourself", 400),
     err_201("Not enough tokens, buy some in order to donate", 400),
     err_202("Cart in forbidden status", 400),

@@ -1,36 +1,19 @@
 package com.devied.walletservice.payment;
 
 import com.devied.walletservice.data.CartData;
+import com.devied.walletservice.error.PaypalUserNotFoundException;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.paypal.api.payments.Payer;
-import com.paypal.api.payments.Payment;
-import com.paypal.api.payments.RedirectUrls;
-import com.paypal.api.payments.Transaction;
-import com.paypal.base.rest.PayPalRESTException;
-
-import java.util.List;
 
 public interface PaymentService {
 
-    Payer getPayerInformation(String email) throws UserNotFoundException;
-
-    RedirectUrls getRedirectURLs();
-
-    List<Transaction> getTransactionInformation(CartData orderDetail) throws Exception;
-
-    String getApprovalLink(Payment approvedPayment);
-
-    Payment getPaymentDetails(String paymentId) throws PayPalRESTException;
-
     Checkout initialCheckout(String name, CartData cartData) throws Exception;
 
-    void completeCheckout(String name, Checkout checkout) throws Exception;
-
-    User getPaypalUser(String token, String email) throws JsonProcessingException, UserNotFoundException;
+    User getPaypalUser(String token, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException;
 
     void PaypalCashOut(String email) throws UserNotFoundException;
 
+    void completeCheckout(String name, Checkout checkout, CartData cartData) throws Exception;
 }

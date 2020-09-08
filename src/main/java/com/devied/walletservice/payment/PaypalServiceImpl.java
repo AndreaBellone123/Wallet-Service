@@ -1,17 +1,35 @@
 package com.devied.walletservice.payment;
 
 import com.devied.walletservice.converter.UserConverter;
+import com.devied.walletservice.data.CartData;
+import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.TransactionData;
-import com.devied.walletservice.model.Payout;
 import com.devied.walletservice.data.UserData;
+import com.devied.walletservice.error.PaypalUserNotFoundException;
+import com.devied.walletservice.error.ProductNotFoundException;
 import com.devied.walletservice.error.UserNotFoundException;
+import com.devied.walletservice.model.CartItem;
+import com.devied.walletservice.model.Checkout;
+import com.devied.walletservice.model.Payout;
 import com.devied.walletservice.model.User;
+import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.TransactionDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
+import com.devied.walletservice.service.CartDataService;
+import com.devied.walletservice.service.TransactionDataService;
 import com.devied.walletservice.util.Email;
+import com.devied.walletservice.util.PaypalParameters;
+import com.devied.walletservice.util.YAMLConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paypal.api.payments.*;
+import com.paypal.base.rest.APIContext;
+import com.paypal.base.rest.PayPalRESTException;
+import com.paypal.core.PayPalHttpClient;
 import com.paypal.http.HttpResponse;
 import com.paypal.http.exceptions.HttpException;
+import com.paypal.payouts.Currency;
+import com.paypal.payouts.PayoutItem;
 import com.paypal.payouts.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +38,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,13 +58,162 @@ public class PaypalServiceImpl implements PaypalService {
     TransactionDataRepository transactionDataRepository;
 
     @Autowired
+    PayPalHttpClient client;
+
+    @Autowired
     UserConverter userConverter;
+
+    @Autowired
+    CartDataService cartDataService;
+
+    @Autowired
+    TransactionDataService transactionDataService;
+
+    @Autowired
+    ProductDataRepository productDataRepository;
+
+    @Autowired
+    YAMLConfig yamlConfig;
 
     public PaypalServiceImpl(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
 
-    public User getUser(String token, String username) throws JsonProcessingException, UserNotFoundException {
+    public Payer getPayerInformation(String email) throws UserNotFoundException {
+
+        Payer payer = new Payer();
+        payer.setPaymentMethod("paypal");
+        PayerInfo payerInfo = new PayerInfo();
+        UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+
+        payerInfo.setEmail(userData.getEmail());
+        payer.setPayerInfo(payerInfo);
+
+        return payer;
+    }
+
+    public RedirectUrls getRedirectURLs() {
+
+        RedirectUrls redirectUrls = new RedirectUrls();
+        redirectUrls.setCancelUrl("http://localhost:8080/paypal_html/cancel.html");
+        redirectUrls.setReturnUrl("http://localhost:8080/paypal_html/review_payment.html");
+
+        return redirectUrls;
+
+    }
+
+    public List<Transaction> getTransactionInformation(CartData orderDetail) throws Exception {
+
+        System.out.println(orderDetail.setSubtotal());
+
+        Details details = new Details();
+        details.setSubtotal(orderDetail.setSubtotal());
+        details.setTax(orderDetail.setTax());
+        Amount amount = new Amount();
+        amount.setCurrency("EUR");
+        amount.setTotal(orderDetail.formatTotal());
+        System.out.print(amount.getTotal());
+        amount.setDetails(details);
+        Transaction transaction = new Transaction();
+        transaction.setAmount(amount);
+        transaction.setDescription(orderDetail.getId());
+        ItemList itemList = new ItemList();
+        List<Item> items = new ArrayList<>();
+
+        for (CartItem cartItem : orderDetail.getItemsList()) {
+            Item item = new Item();
+            item.setCurrency(orderDetail.getCurrency());
+            item.setName(orderDetail.getId());
+            ProductData productData = productDataRepository.findById(cartItem.getId()).orElseThrow(ProductNotFoundException::new);
+            item.setPrice(productData.setPrice());
+            item.setTax(orderDetail.setTax());
+            item.setQuantity(String.valueOf(cartItem.getQuantity()));
+            items.add(item);
+        }
+
+        itemList.setItems(items);
+        transaction.setItemList(itemList);
+        List<Transaction> listTransaction = new ArrayList<>();
+        System.out.println(transaction.getAmount());
+        System.out.println(transaction.getItemList());
+        listTransaction.add(transaction);
+
+        return listTransaction;
+    }
+
+    public String getApprovalLink(Payment approvedPayment) {
+
+        List<Links> links = approvedPayment.getLinks();
+        String approvalLink = null;
+
+        for (Links link : links) {
+            if (link.getRel().equalsIgnoreCase("approval_url")) {
+                approvalLink = link.getHref();
+                break;
+            }
+        }
+
+        return approvalLink;
+    }
+
+    public Payment getPaymentDetails(String paymentId) throws PayPalRESTException {
+        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
+        return Payment.get(apiContext, paymentId);
+    }
+
+    @Override
+    public Checkout initialCheckout(String name, CartData cartData) throws Exception {
+
+        cartDataService.updateState(cartData);
+
+        Payer payer = getPayerInformation(name);
+        RedirectUrls redirectUrls = getRedirectURLs();
+        List<Transaction> listTransaction = getTransactionInformation(cartData);
+
+        Payment requestPayment = new Payment();
+        requestPayment.setTransactions(listTransaction);
+        requestPayment.setRedirectUrls(redirectUrls);
+        requestPayment.setPayer(payer);
+        requestPayment.setIntent("authorize");
+        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
+        Payment approvedPayment = null;
+
+        try {
+
+            approvedPayment = requestPayment.create(apiContext);
+
+        } catch (PayPalRESTException e) {
+
+            e.printStackTrace();
+        }
+
+        Checkout checkout = new Checkout();
+        assert approvedPayment != null;
+        checkout.setUrl(getApprovalLink(approvedPayment));
+        transactionDataService.createTransaction(checkout.getUrl(), name);
+
+        return checkout;
+    }
+
+    @Override
+    public void completeCheckout(String name, Checkout checkout) throws Exception {
+
+        ObjectMapper mapper = new ObjectMapper();
+        PaypalParameters params = mapper.convertValue(checkout.getParameters(), PaypalParameters.class);
+        PaymentExecution paymentExecution = new PaymentExecution();
+        paymentExecution.setPayerId(params.getPayerId());
+
+        Payment payment = new Payment().setId(params.getPaymentId());
+
+        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
+
+        payment.execute(apiContext, paymentExecution);
+
+        cartDataService.finalState(name);
+
+    }
+
+    public User getUser(String token, String username) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException {
 
         String url = "https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1";
         HttpHeaders headers = new HttpHeaders();
@@ -69,11 +236,12 @@ public class PaypalServiceImpl implements PaypalService {
 
         PaypalUser paypalUser1 = response.getBody();
         if (Objects.isNull(paypalUser1) || Objects.isNull(paypalUser1.getEmails()) || paypalUser1.getEmails().size() == 0) {
-            // TODO error
+            throw new PaypalUserNotFoundException();
         }
 
         Email email = paypalUser1.getEmails().get(0);
         UserData userData = userDataRepository.findByEmail(username).orElseThrow(UserNotFoundException::new);
+
         if (userData == null) {
             UserData userData1 = new UserData();
             userData1.setEmail(username);
@@ -87,17 +255,11 @@ public class PaypalServiceImpl implements PaypalService {
     }
 
     public void cashOut(String email) throws UserNotFoundException {
-        /*/TODO richiamare nostro bearer token
-        String url = "https://api.sandbox.paypal.com/v1/oauth2/token";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth("AVNSlr4OhE8kAJVt82ygsLq7yD64O8eYIwP2n1Q790DtcCzkE1-4uyfQrtR1u1Ysz_Hlaz7HdikaIFoQ","EK7hItd2kMKDv8zJ4-NFxSCk1myGYuP-JHXNj4SlqUGB42krSotKiHOm_jixeR9bjfp4TfCVu1k3PKbs");//TODO passare client id e secret e prendere access token da mettere nella seconda HTTP
-        //TODO CREARE PAYOUTDATA
-        //TODO HTTP REQUEST POST https://api.sandbox.paypal.com/v1/payments/payouts PAYOUT DATA e salvare in repository*/
 
         UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
         List<PayoutItem> items = IntStream
-                .range(0,1)
+                .range(0, 1)
                 .mapToObj(index -> new PayoutItem()
                         .senderItemId("Test_txn_" + index)
                         .note("Your 50€ Payout!")
@@ -117,7 +279,7 @@ public class PaypalServiceImpl implements PaypalService {
 
         try {
             // Call API with your client and get a response for your call
-            HttpResponse<CreatePayoutResponse> response = PaypalCredentials.client.execute(new PayoutsPostRequest().requestBody(request));
+            HttpResponse<CreatePayoutResponse> response = client.execute(new PayoutsPostRequest().requestBody(request));
 
             // If call returns body in response, you can get the de-serialized version by
             // calling result() on the response

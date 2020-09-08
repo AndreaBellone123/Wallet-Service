@@ -7,6 +7,7 @@ import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
 import com.devied.walletservice.event.CustomSpringEvent;
+import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.DonationDataRepository;
@@ -17,6 +18,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.ArrayList;
 
 
 @Service
@@ -61,29 +64,6 @@ public class UserDataServiceImpl implements UserDataService {
         userDataRepository.save(userData);
     }
 
-    /*@Override
-    public ResponseEntity<User> buyProduct(String email, String pid) throws Exception {
-
-        UserData userData = userDataRepository.findByEmail(email);
-        ProductData productData1 = productDataRepository.findById(pid).orElseThrow(() -> new Exception("No Products Found"));
-
-        if(userData.getAvailableFunds() >= productData1.getPrice()) {
-            userData.setBoughtTokens(userData.getBoughtTokens() + productData1.getAmount());
-            userData.setAvailableFunds(userData.getAvailableFunds() - productData1.getPrice());
-            userDataRepository.save(userData);
-            User user = userConverter.convert(userData);
-            var headers = new HttpHeaders();
-            headers.add("Tokens bought successfully", "Wallets Controller");
-            return ResponseEntity.accepted().headers(headers).body(user);
-        }
-        else {
-            var headers = new HttpHeaders();
-            headers.add("Insufficient Funds!", "Wallets Controller");
-            User user = userConverter.convert(userData);
-            return ResponseEntity.badRequest().headers(headers).body(user);
-        }
-    }*/
-
     @Override
     public User getWallet(String email) throws Exception {
 
@@ -123,7 +103,7 @@ public class UserDataServiceImpl implements UserDataService {
             throw new SameUserException();
         }
 
-        if(donatingUser.getBought() < amount) {
+        if (donatingUser.getBought() < amount) {
 
             streamingUser.setEarned(streamingUser.getEarned() + amount);
 
@@ -158,6 +138,25 @@ public class UserDataServiceImpl implements UserDataService {
     public void DeviedCashOut(String email) throws UserNotFoundException {
         //TODO metodo di pagamento controllo
         paymentService.PaypalCashOut(email);
+    }
+
+    @Override
+    public User createWallet(String name) {
+
+        UserData userData = new UserData();
+        userData.setEmail(name);
+
+        return userConverter.convert(userData);
+    }
+
+    @Override
+    public User addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException {
+
+        UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
+        userData.getPaymentMethods().add(paymentMethod);
+        userDataRepository.save(userData);
+
+        return userConverter.convert(userData);
     }
 
 }

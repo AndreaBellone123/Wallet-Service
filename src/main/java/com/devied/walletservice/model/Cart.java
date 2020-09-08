@@ -16,4 +16,5 @@ public class Cart {
     private double subTotal;
     private String currency = "EUR";
     private List<CartItem> itemsList;
+    private String paymentMethod;
 }

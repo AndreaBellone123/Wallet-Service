@@ -5,11 +5,13 @@ import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.error.CartInForbiddenStatusException;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
+import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.CartDataRepository;
 import com.devied.walletservice.util.CartStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,13 +33,19 @@ public class CartDataServiceImpl implements CartDataService {
     @Autowired
     CartDataService cartDataService;
 
+    @Autowired
+    PaymentService paymentService;
+
+    @Autowired
+    UserDataService userDataService;
+
     @Override
     public CartData findCurrent(String email) {
         return cartDataRepository.findTopByEmailOrderByDateDesc(email);
     }
 
     @Override
-    public CartData patchCurrent(String email, List<CartItem> cartItems) throws Exception {
+    public CartData patchCurrent(String email, List<CartItem> cartItems, String paymentMethod) throws Exception {
 
         CartData cartData = findCurrent(email); // Fixed null pointer exception
 
@@ -87,5 +95,14 @@ public class CartDataServiceImpl implements CartDataService {
         }
         cartData.setStatus(CartStatus.Completed);
         cartDataRepository.save(cartData);
+    }
+
+    @Override
+    public void checkoutCurrent(Checkout checkout, String name) throws Exception {
+
+        CartData cartData = cartDataService.findCurrent(name);
+        paymentService.completeCheckout(name, checkout,cartData);
+        userDataService.updateWallet(name);
+        emptyCart(name, checkout);
     }
 }

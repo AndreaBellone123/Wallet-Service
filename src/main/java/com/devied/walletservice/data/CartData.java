@@ -26,6 +26,7 @@ public class CartData {
     private String email;
     private String currency = "EUR";
     private CartStatus status = CartStatus.Prepared;
+    private String paymentMethod;
 
     public String setSubtotal() {
         return String.format(Locale.US, "%.2f", subtotal);

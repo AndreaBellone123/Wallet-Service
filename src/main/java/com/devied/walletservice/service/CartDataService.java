@@ -10,11 +10,13 @@ public interface CartDataService {
 
     CartData findCurrent(String email);
 
-    CartData patchCurrent(String email, List<CartItem> cartItems) throws Exception;
+    CartData patchCurrent(String email, List<CartItem> cartItems, String paymentMethod) throws Exception;
 
     void emptyCart(String email, Checkout checkout) throws Exception;
 
     void updateState(CartData cartData) throws Exception;
 
     void finalState(String name) throws Exception;
+
+    void checkoutCurrent(Checkout checkout, String name) throws Exception;
 }
