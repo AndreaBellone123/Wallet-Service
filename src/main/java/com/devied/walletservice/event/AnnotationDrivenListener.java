@@ -25,7 +25,7 @@ public class AnnotationDrivenListener {
         System.out.println("Success");
         UserData userData = userDataRepository.findByEmail(customSpringEvent.getDonationData().getStreamer()).orElseThrow(UserNotFoundException::new);
 
-        if (userData.getEarned() >= 1000){
+        while (userData.getEarned() >= 1000) {
             userDataService.DeviedCashOut(userData.getEmail());
         }
 

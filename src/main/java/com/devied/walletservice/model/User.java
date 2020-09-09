@@ -4,12 +4,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class User {
 
     private String email;
-    private String paypalEmail;
+    private List<PaymentMethod> paymentMethods = new ArrayList<>();
     private int earned;
     private int bought;
     private int total;

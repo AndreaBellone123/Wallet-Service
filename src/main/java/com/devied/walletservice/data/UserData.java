@@ -21,7 +21,6 @@ public class UserData {
     private int bought;
     private int total;
     private List<PaymentMethod> paymentMethods = new ArrayList<>();
-    private String paypalEmail;
 
     public void setBought(int bought) {
         this.bought = bought;

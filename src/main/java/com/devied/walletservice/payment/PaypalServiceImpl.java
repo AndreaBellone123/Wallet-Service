@@ -5,13 +5,12 @@ import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.TransactionData;
 import com.devied.walletservice.data.UserData;
+import com.devied.walletservice.error.DuplicatePaymentMethodException;
 import com.devied.walletservice.error.PaypalUserNotFoundException;
 import com.devied.walletservice.error.ProductNotFoundException;
 import com.devied.walletservice.error.UserNotFoundException;
-import com.devied.walletservice.model.CartItem;
-import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.model.Payout;
-import com.devied.walletservice.model.User;
+import com.devied.walletservice.model.*;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.TransactionDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
@@ -20,7 +19,6 @@ import com.devied.walletservice.service.TransactionDataService;
 import com.devied.walletservice.util.Email;
 import com.devied.walletservice.util.PaypalParameters;
 import com.devied.walletservice.util.YAMLConfig;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
@@ -38,6 +36,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -213,7 +212,7 @@ public class PaypalServiceImpl implements PaypalService {
 
     }
 
-    public User getUser(String token, String username) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException {
+    public User getUser(String token, String username) throws UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
 
         String url = "https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1";
         HttpHeaders headers = new HttpHeaders();
@@ -245,11 +244,29 @@ public class PaypalServiceImpl implements PaypalService {
         if (userData == null) {
             UserData userData1 = new UserData();
             userData1.setEmail(username);
-            userData1.setPaypalEmail(email.getValue());
-        }
-        userData.setPaypalEmail(email.getValue());
+            PaypalMethod paypalMethod = new PaypalMethod();
+            paypalMethod.setEmail(email.getValue());
+            List<PaymentMethod> paymentMethods = userData1.getPaymentMethods();
+            paymentMethods.add(paypalMethod);
+            userData1.setPaymentMethods(paymentMethods);
 
-        userDataRepository.save(userData);
+            userDataRepository.save(userData1);
+        } else {
+            PaypalMethod paypalMethod = new PaypalMethod();
+            paypalMethod.setEmail(email.getValue());
+            List<PaymentMethod> paymentMethods = userData.getPaymentMethods();
+            for (PaymentMethod paymentMethod : paymentMethods) {
+                if (paymentMethod.getMethod().equals("paypal")) {
+                    paypalMethod = (PaypalMethod) paymentMethod;
+                    if (paypalMethod.getEmail().equals(email.getValue())) {
+                        throw new DuplicatePaymentMethodException();
+                    }
+                }
+            }
+            userData.getPaymentMethods().add(paypalMethod);
+
+            userDataRepository.save(userData);
+        }
 
         return userConverter.convert(userData);
     }
@@ -257,13 +274,21 @@ public class PaypalServiceImpl implements PaypalService {
     public void cashOut(String email) throws UserNotFoundException {
 
         UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        List<PaymentMethod> paymentMethods = userData.getPaymentMethods();
+        PaypalMethod paypalMethod = null;
+        for (PaymentMethod paymentMethod : paymentMethods) {
+            if (paymentMethod.getMethod().equals("paypal")) {
+                paypalMethod = (PaypalMethod) paymentMethod;
+            }
+        }
 
+        final PaypalMethod finalPaypalMethod = paypalMethod;
         List<PayoutItem> items = IntStream
                 .range(0, 1)
                 .mapToObj(index -> new PayoutItem()
                         .senderItemId("Test_txn_" + index)
                         .note("Your 50€ Payout!")
-                        .receiver(userData.getPaypalEmail())
+                        .receiver(finalPaypalMethod.getEmail())
                         .amount(new Currency()
                                 .currency("EUR")
                                 .value("50.00")))

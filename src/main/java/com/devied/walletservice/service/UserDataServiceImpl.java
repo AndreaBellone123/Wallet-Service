@@ -138,6 +138,10 @@ public class UserDataServiceImpl implements UserDataService {
     public void DeviedCashOut(String email) throws UserNotFoundException {
         //TODO metodo di pagamento controllo
         paymentService.PaypalCashOut(email);
+        UserData userData =userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        userData.setEarned(userData.getEarned() - 1000);
+        userDataRepository.save(userData);
+
     }
 
     @Override

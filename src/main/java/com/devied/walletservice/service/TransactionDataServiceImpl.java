@@ -8,6 +8,8 @@ import com.devied.walletservice.error.TransactionNotFoundException;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.TransactionDataRepository;
+import com.devied.walletservice.util.PaypalParameters;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,11 +30,14 @@ public class TransactionDataServiceImpl implements TransactionDataService {
     @Override
     public void saveTransaction(String email, Checkout checkout) throws Exception {
 
+        ObjectMapper mapper = new ObjectMapper();
+        PaypalParameters params = mapper.convertValue(checkout.getParameters(), PaypalParameters.class);
+
         CartData cartData = cartDataService.findCurrent(email);
         TransactionData transactionData = transactionDataRepository.findTopByEmailOrderByDateDesc(email).orElseThrow(() -> new TransactionNotFoundException());
         ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(() -> new ProductNotFoundException());
         transactionData.setProductData(productdata);
-        transactionData.setPaymentId(checkout.getPaymentId());
+        transactionData.setPaymentId(params.getPaymentId());
         transactionDataRepository.save(transactionData);
     }
 
