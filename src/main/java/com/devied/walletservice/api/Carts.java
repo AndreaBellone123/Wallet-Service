@@ -2,6 +2,7 @@ package com.devied.walletservice.api;
 
 import com.devied.walletservice.converter.CartConverter;
 import com.devied.walletservice.data.CartData;
+import com.devied.walletservice.error.NoCartsAvailableException;
 import com.devied.walletservice.identity.IdentityRole;
 import com.devied.walletservice.model.Cart;
 import com.devied.walletservice.model.Checkout;
@@ -27,7 +28,7 @@ public class Carts {
 
     @GetMapping("/current")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public Cart getCurrentCart(Authentication auth) {
+    public Cart getCurrentCart(Authentication auth) throws NoCartsAvailableException {
         return cartConverter.convert(cartDataService.findCurrent(auth.getName()));
     }
 

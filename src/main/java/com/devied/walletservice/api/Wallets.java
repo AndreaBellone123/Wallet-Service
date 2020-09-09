@@ -5,6 +5,7 @@ import com.devied.walletservice.error.PaymentMethodNotFoundException;
 import com.devied.walletservice.error.PaypalUserNotFoundException;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.identity.IdentityRole;
+import com.devied.walletservice.model.Token;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.service.UserDataService;
@@ -33,7 +34,7 @@ public class Wallets {
 
     @PatchMapping
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User linkToPaypal(@RequestBody String token,Authentication auth) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
+    public User linkToPaypal(@RequestBody Token token, Authentication auth) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
         return paymentService.getPaypalUser(token, auth.getName());
     }
 

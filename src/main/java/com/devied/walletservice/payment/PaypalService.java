@@ -5,6 +5,7 @@ import com.devied.walletservice.error.DuplicatePaymentMethodException;
 import com.devied.walletservice.error.PaypalUserNotFoundException;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.Checkout;
+import com.devied.walletservice.model.Token;
 import com.devied.walletservice.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -14,7 +15,7 @@ public interface PaypalService {
 
     void completeCheckout(String name, Checkout checkout) throws Exception;
 
-    User getUser(String token, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException;
+    User getUser(Token token, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException;
 
     void cashOut(String email) throws UserNotFoundException;
 }

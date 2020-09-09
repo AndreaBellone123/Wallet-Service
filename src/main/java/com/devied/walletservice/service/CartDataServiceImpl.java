@@ -3,6 +3,7 @@ package com.devied.walletservice.service;
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.error.CartInForbiddenStatusException;
+import com.devied.walletservice.error.NoCartsAvailableException;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.payment.PaymentService;
@@ -40,8 +41,16 @@ public class CartDataServiceImpl implements CartDataService {
     UserDataService userDataService;
 
     @Override
-    public CartData findCurrent(String email) {
+    public CartData findCurrent(String email) throws NoCartsAvailableException {
+
+       if (cartDataRepository.findTopByEmailOrderByDateDesc(email) == null ){
+
+           throw new NoCartsAvailableException();
+
+       }
+
         return cartDataRepository.findTopByEmailOrderByDateDesc(email);
+
     }
 
     @Override
@@ -50,6 +59,7 @@ public class CartDataServiceImpl implements CartDataService {
         CartData cartData = findCurrent(email); // Fixed null pointer exception
 
         if (cartData == null) {
+
             cartData = new CartData();
             cartData.setEmail(email);
         }
@@ -60,6 +70,7 @@ public class CartDataServiceImpl implements CartDataService {
 
         cartData.setItemsList(new ArrayList<>(itemsSet));
         cartData.setSubtotal(0);
+
         for (CartItem i : itemsSet) {
             ProductData productData = productDataService.findProduct(i.getId());
             cartData.setSubtotal(productData.getPrice() * i.getQuantity() + cartData.getSubtotal());

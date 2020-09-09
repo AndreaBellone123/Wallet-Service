@@ -212,11 +212,11 @@ public class PaypalServiceImpl implements PaypalService {
 
     }
 
-    public User getUser(String token, String username) throws UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
+    public User getUser(Token token, String username) throws UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
 
         String url = "https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1";
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+        headers.setBearerAuth(token.getToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity request = new HttpEntity(headers);
 

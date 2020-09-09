@@ -6,6 +6,7 @@ import com.devied.walletservice.error.PaymentMethodNotFoundException;
 import com.devied.walletservice.error.PaypalUserNotFoundException;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.Checkout;
+import com.devied.walletservice.model.Token;
 import com.devied.walletservice.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public User getPaypalUser(String token, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
+    public User getPaypalUser(Token token, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
 
         return paypalService.getUser(token, email);
     }

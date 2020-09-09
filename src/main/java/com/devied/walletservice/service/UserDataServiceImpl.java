@@ -50,6 +50,7 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
+
         return userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
@@ -58,6 +59,7 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData userData = findByEmail(email);
         CartData cartData = cartDataService.findCurrent(email);
+
         ProductData productdata = productDataRepository.findById(cartData.getItemsList().get(0).getId()).orElseThrow(ProductNotFoundException::new);
         userData.setBought(userData.getBought() + productdata.getAmount() * cartData.getItemsList().get(0).getQuantity());
         userData.setTotal(userData.getBought() + userData.getEarned());
@@ -105,10 +107,11 @@ public class UserDataServiceImpl implements UserDataService {
 
         if (donatingUser.getBought() < amount) {
 
-            streamingUser.setEarned(streamingUser.getEarned() + amount);
+            throw new InsufficientFundsException();
 
-            donatingUser.setEarned(donatingUser.getEarned() - amount);
-        } else {
+        }
+
+        else {
 
             streamingUser.setEarned(streamingUser.getEarned() + amount);
 
@@ -136,9 +139,10 @@ public class UserDataServiceImpl implements UserDataService {
 
     @Override
     public void DeviedCashOut(String email) throws UserNotFoundException {
-        //TODO metodo di pagamento controllo
+
+        //TODO controllo sul metodo di pagamento e sulla quantita' di token ricevuti dalle donazioni
         paymentService.PaypalCashOut(email);
-        UserData userData =userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         userData.setEarned(userData.getEarned() - 1000);
         userDataRepository.save(userData);
 
@@ -149,7 +153,6 @@ public class UserDataServiceImpl implements UserDataService {
 
         UserData userData = new UserData();
         userData.setEmail(name);
-
         return userConverter.convert(userData);
     }
 
@@ -159,7 +162,6 @@ public class UserDataServiceImpl implements UserDataService {
         UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
         userData.getPaymentMethods().add(paymentMethod);
         userDataRepository.save(userData);
-
         return userConverter.convert(userData);
     }
 
