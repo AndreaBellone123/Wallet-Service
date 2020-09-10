@@ -44,10 +44,26 @@ public class Wallets {
         return userDataService.createWallet(auth.getName());
     }
 
-    @PatchMapping(path = "/methods")
+    @PostMapping(path = "/methods")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public User addPaymentMethod(@RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException {
         return userDataService.addPaymentMethod(paymentMethod, auth.getName());
     }
+
+    @PatchMapping(path = "/methods/{id}")
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
+    public User updatePaymentMethod(@PathVariable(value = "id") String id,@RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, DuplicatePaymentMethodException {
+        return userDataService.updateDefaultMethod(id,paymentMethod, auth.getName());
+    }
+
+    //TODO ritornare paymentMethods e passare solo ID
+
+    @DeleteMapping( path = "/methods/{id}")
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
+    public User deletePaymentMethod(@PathVariable(value = "id") String id,Authentication authentication) throws UserNotFoundException, PaymentMethodNotFoundException {
+
+        return userDataService.deletePaymentMethod(id,authentication.getName());
+    }
+
 
 }

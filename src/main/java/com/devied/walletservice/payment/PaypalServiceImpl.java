@@ -188,6 +188,7 @@ public class PaypalServiceImpl implements PaypalService {
 
         Checkout checkout = new Checkout();
         assert approvedPayment != null;
+
         checkout.setUrl(getApprovalLink(approvedPayment));
         transactionDataService.createTransaction(checkout.getUrl(), name);
 

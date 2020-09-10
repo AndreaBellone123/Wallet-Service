@@ -1,6 +1,8 @@
 package com.devied.walletservice.service;
 
 import com.devied.walletservice.data.UserData;
+import com.devied.walletservice.error.DuplicatePaymentMethodException;
+import com.devied.walletservice.error.PaymentMethodNotFoundException;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.model.User;
@@ -21,4 +23,8 @@ public interface UserDataService {
     User createWallet(String name);
 
     User addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException;
+
+    User updateDefaultMethod(String id,PaymentMethod paymentMethod, String name) throws UserNotFoundException, DuplicatePaymentMethodException, PaymentMethodNotFoundException;
+
+    User deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException;
 }

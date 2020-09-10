@@ -11,12 +11,13 @@ public enum Error {
     err_104("Wallet Not Found", 404),
     err_105("Payment Method Not Found", 404),
     err_106("Paypal User Not Found", 404),
+    err_107("No Carts Available",404),
     err_200("Cannot donate tokens to yourself", 400),
     err_201("Not enough tokens, buy some in order to donate", 400),
     err_202("Cart in forbidden status", 400),
     err_203("Invalid Amount", 400),
     err_204("Duplicate Payment Method", 400),
-    err_205("No Carts Available",400);
+    err_205("Empty Cart", 400);
 
     private final String message;
     private final int code;

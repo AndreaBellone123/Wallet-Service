@@ -18,8 +18,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.ArrayList;
 
 
 @Service
@@ -109,9 +109,7 @@ public class UserDataServiceImpl implements UserDataService {
 
             throw new InsufficientFundsException();
 
-        }
-
-        else {
+        } else {
 
             streamingUser.setEarned(streamingUser.getEarned() + amount);
 
@@ -163,6 +161,62 @@ public class UserDataServiceImpl implements UserDataService {
         userData.getPaymentMethods().add(paymentMethod);
         userDataRepository.save(userData);
         return userConverter.convert(userData);
+    }
+
+    @Override
+    public User updateDefaultMethod(String id, PaymentMethod prototype, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
+
+        UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
+        List<PaymentMethod> paymentMethods = userData.getPaymentMethods();
+
+        PaymentMethod found = userData.getPaymentMethods()
+                .stream()
+                .filter(paymentMethod -> {
+                   return paymentMethod.getUuid().equals(id);
+                })
+                .findFirst()
+                .orElseThrow(PaymentMethodNotFoundException::new);
+
+       found.setPayInMethod(prototype.isPayInMethod());
+       found.setPayOutMethod(prototype.isPayOutMethod());
+
+        userData.getPaymentMethods()
+                .stream()
+                .filter(paymentMethod -> !paymentMethod.getUuid().equals(id))
+                .forEach(paymentMethod -> {
+
+                    if (prototype.isPayInMethod()) {
+                        paymentMethod.setPayInMethod(false);
+                    }
+                    if (prototype.isPayOutMethod()) {
+                        paymentMethod.setPayOutMethod(false);
+                    }
+                });
+
+        userDataRepository.save(userData);
+        return userConverter.convert(userData);
+
+    }
+
+    @Override
+    public User deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
+
+        UserData userData = findByEmail(name);
+
+        List<PaymentMethod> paymentMethods = userData.getPaymentMethods();
+
+        for (PaymentMethod paymentMethod : paymentMethods) {
+
+            if (id.equals(paymentMethod.getUuid())) {
+
+                userData.getPaymentMethods().remove(paymentMethod);
+                userDataRepository.save(userData);
+                return userConverter.convert(userData);
+            }
+        }
+
+        throw new PaymentMethodNotFoundException();
+
     }
 
 }

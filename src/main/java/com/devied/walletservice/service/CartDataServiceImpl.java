@@ -2,10 +2,14 @@ package com.devied.walletservice.service;
 
 import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
+import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.CartInForbiddenStatusException;
+import com.devied.walletservice.error.EmptyCartException;
 import com.devied.walletservice.error.NoCartsAvailableException;
+import com.devied.walletservice.error.PaymentMethodNotFoundException;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
+import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.CartDataRepository;
 import com.devied.walletservice.util.CartStatus;
@@ -69,12 +73,34 @@ public class CartDataServiceImpl implements CartDataService {
         itemsSet.addAll(cartItems);
 
         cartData.setItemsList(new ArrayList<>(itemsSet));
+
+        if(cartData.getItemsList().isEmpty()){
+
+            throw new EmptyCartException();
+        }
+
         cartData.setSubtotal(0);
 
         for (CartItem i : itemsSet) {
+
             ProductData productData = productDataService.findProduct(i.getId());
             cartData.setSubtotal(productData.getPrice() * i.getQuantity() + cartData.getSubtotal());
         }
+        UserData userData = userDataService.findByEmail(email);
+
+        for(PaymentMethod selectedPaymentMethod : userData.getPaymentMethods()){
+
+            if (selectedPaymentMethod.getUuid().equals(cartData.getPaymentMethod().getUuid())){
+
+                cartData.setPaymentMethod(selectedPaymentMethod);
+            }
+
+            else {
+
+                throw new PaymentMethodNotFoundException();
+            }
+        }
+
         cartDataRepository.save(cartData);
         return cartData;
     }

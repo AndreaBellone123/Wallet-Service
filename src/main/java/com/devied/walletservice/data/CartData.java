@@ -1,6 +1,7 @@
 package com.devied.walletservice.data;
 
 import com.devied.walletservice.model.CartItem;
+import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.util.CartStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +27,7 @@ public class CartData {
     private String email;
     private String currency = "EUR";
     private CartStatus status = CartStatus.Prepared;
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
 
     public String setSubtotal() {
         return String.format(Locale.US, "%.2f", subtotal);
