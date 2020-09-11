@@ -8,6 +8,7 @@ import com.devied.walletservice.data.UserData;
 import com.devied.walletservice.error.*;
 import com.devied.walletservice.event.CustomSpringEvent;
 import com.devied.walletservice.model.PaymentMethod;
+import com.devied.walletservice.model.PaypalMethod;
 import com.devied.walletservice.model.User;
 import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.DonationDataRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -158,7 +160,9 @@ public class UserDataServiceImpl implements UserDataService {
     public User addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException {
 
         UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
-        userData.getPaymentMethods().add(paymentMethod);
+        List<PaymentMethod> paymentMethodList = userData.getPaymentMethods();
+        paymentMethod.setUuid(UUID.randomUUID().toString().replace("-",""));
+        paymentMethodList.add(paymentMethod);
         userDataRepository.save(userData);
         return userConverter.convert(userData);
     }
@@ -167,13 +171,10 @@ public class UserDataServiceImpl implements UserDataService {
     public User updateDefaultMethod(String id, PaymentMethod prototype, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
 
         UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
-        List<PaymentMethod> paymentMethods = userData.getPaymentMethods();
 
         PaymentMethod found = userData.getPaymentMethods()
                 .stream()
-                .filter(paymentMethod -> {
-                   return paymentMethod.getUuid().equals(id);
-                })
+                .filter(paymentMethod -> paymentMethod.getUuid().equals(id))
                 .findFirst()
                 .orElseThrow(PaymentMethodNotFoundException::new);
 
@@ -185,12 +186,9 @@ public class UserDataServiceImpl implements UserDataService {
                 .filter(paymentMethod -> !paymentMethod.getUuid().equals(id))
                 .forEach(paymentMethod -> {
 
-                    if (prototype.isPayInMethod()) {
-                        paymentMethod.setPayInMethod(false);
-                    }
-                    if (prototype.isPayOutMethod()) {
-                        paymentMethod.setPayOutMethod(false);
-                    }
+                        paymentMethod.setPayInMethod(!(prototype.isPayInMethod()));
+                        paymentMethod.setPayOutMethod(!(prototype.isPayOutMethod()));
+
                 });
 
         userDataRepository.save(userData);

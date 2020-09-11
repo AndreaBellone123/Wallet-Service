@@ -7,6 +7,8 @@ import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.model.User;
 
+import java.util.UUID;
+
 
 public interface UserDataService {
 
@@ -24,7 +26,7 @@ public interface UserDataService {
 
     User addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException;
 
-    User updateDefaultMethod(String id,PaymentMethod paymentMethod, String name) throws UserNotFoundException, DuplicatePaymentMethodException, PaymentMethodNotFoundException;
+    User updateDefaultMethod(String id, PaymentMethod paymentMethod, String name) throws UserNotFoundException, DuplicatePaymentMethodException, PaymentMethodNotFoundException;
 
     User deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException;
 }

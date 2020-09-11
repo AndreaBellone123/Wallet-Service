@@ -16,6 +16,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/wallets")
 public class Wallets {
@@ -52,7 +54,7 @@ public class Wallets {
 
     @PatchMapping(path = "/methods/{id}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User updatePaymentMethod(@PathVariable(value = "id") String id,@RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, DuplicatePaymentMethodException {
+    public User updatePaymentMethod(@PathVariable(value = "id") String id, @RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, DuplicatePaymentMethodException {
         return userDataService.updateDefaultMethod(id,paymentMethod, auth.getName());
     }
 

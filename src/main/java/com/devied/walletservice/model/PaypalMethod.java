@@ -10,6 +10,7 @@ public class PaypalMethod extends PaymentMethod {
     private String email;
 
     public PaypalMethod() {
+
         super("paypal");
     }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.UUID;
 
 @Getter
@@ -13,14 +12,15 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PaymentMethod {
 
-    private UUID uuid;
+    private String uuid;
     private String method;
+    private String email;
     private boolean payInMethod;
     private boolean payOutMethod;
 
     public PaymentMethod(String method) {
 
         this.method = method;
-        this.uuid = UUID.randomUUID();
+        this.uuid = UUID.randomUUID().toString().replace("-","");
     }
 }
