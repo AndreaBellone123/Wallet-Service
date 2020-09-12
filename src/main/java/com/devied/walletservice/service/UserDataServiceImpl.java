@@ -48,8 +48,6 @@ public class UserDataServiceImpl implements UserDataService {
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
 
-    @Autowired
-    PaymentService paymentService;
 
     @Override
     public UserData findByEmail(String email) throws UserNotFoundException {
@@ -141,16 +139,11 @@ public class UserDataServiceImpl implements UserDataService {
     @Override
     public void cashOut(String email) throws UserNotFoundException, PaymentMethodNotAllowedException {
 
-        // interfaccia PaymentService che ha cashOut, startCheckout, completeCheckout
-        // factory PaymentServiceFactory.create(String method) -> PaymentService
-
-        //TODO controllo sul metodo di pagamento e sulla quantita' di token ricevuti dalle donazioni
-        paymentService.cashOut(email);
         UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-        double cashoutMultiplierDouble = userData.getEarned() / 1000;
-        int cashoutMultiplierInt = (int) cashoutMultiplierDouble;
-        int cashoutAmount = 1000 * cashoutMultiplierInt;
-        userData.setEarned(userData.getEarned() - cashoutAmount);
+        double cashOutMultiplierDouble = userData.getEarned() / 1000;
+        int cashOutMultiplierInt = (int) cashOutMultiplierDouble;
+        int cashOutAmount = 1000 * cashOutMultiplierInt;
+        userData.setEarned(userData.getEarned() - cashOutAmount);
         userDataRepository.save(userData);
 
     }

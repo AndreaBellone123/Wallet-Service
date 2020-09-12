@@ -39,9 +39,6 @@ public class CartDataServiceImpl implements CartDataService {
     CartDataService cartDataService;
 
     @Autowired
-    PaymentService paymentService;
-
-    @Autowired
     UserDataService userDataService;
 
     @Autowired
@@ -146,8 +143,6 @@ public class CartDataServiceImpl implements CartDataService {
     @Override
     public void checkoutCurrent(Checkout checkout, String name) throws Exception {
 
-        CartData cartData = cartDataService.findCurrent(name);
-        paymentService.completeCheckout(name, checkout,cartData);
         userDataService.updateWallet(name);
         emptyCart(name, checkout);
     }

@@ -34,7 +34,7 @@ public class Wallets {
     @PatchMapping
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public User linkToPaypal(@RequestBody PaypalAccessToken paypalAccessToken, Authentication auth) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
-        return paymentService.getPaypalUser(paypalAccessToken, auth.getName());
+        return paymentService.getUser(paypalAccessToken, auth.getName());
     }
 
     @PostMapping

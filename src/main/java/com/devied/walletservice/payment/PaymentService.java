@@ -14,9 +14,9 @@ public interface PaymentService {
 
     Checkout initialCheckout(String name) throws Exception;
 
-    User getPaypalUser(PaypalAccessToken paypalAccessToken, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException;
+    User getUser(PaypalAccessToken paypalAccessToken, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException;
 
     void cashOut(String email) throws UserNotFoundException, PaymentMethodNotAllowedException;
 
-    void completeCheckout(String name, Checkout checkout, CartData cartData) throws Exception;
+    void completeCheckout( CartData cartData, Checkout checkout) throws Exception;
 }
