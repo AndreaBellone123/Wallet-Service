@@ -3,6 +3,7 @@ package com.devied.walletservice.data;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.util.CartStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -15,6 +16,7 @@ import java.util.Locale;
 @Getter
 @Setter
 @Document("carts")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartData {
 
     @Id

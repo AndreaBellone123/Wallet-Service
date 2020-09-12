@@ -16,6 +16,7 @@ public class CartConverterImpl implements CartConverter {
         cart.setSubTotal(current.getSubtotal());
         cart.setItemsList(current.getItemsList());
         cart.setId(current.getId());
+        cart.setPaymentMethod(current.getPaymentMethod());
         return cart;
     }
 }

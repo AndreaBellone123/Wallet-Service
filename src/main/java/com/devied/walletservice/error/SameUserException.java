@@ -4,6 +4,6 @@ import com.devied.walletservice.util.Error;
 
 public class SameUserException extends BaseError {
     public SameUserException() {
-        super(Error.err_200);
+        super(Error.err_206);
     }
 }

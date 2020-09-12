@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Token {
+public class PaypalAccessToken {
 
     private String token;
 }

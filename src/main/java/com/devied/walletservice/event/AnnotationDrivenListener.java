@@ -1,6 +1,7 @@
 package com.devied.walletservice.event;
 
 import com.devied.walletservice.data.UserData;
+import com.devied.walletservice.error.PaymentMethodNotAllowedException;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.repository.UserDataRepository;
 import com.devied.walletservice.service.UserDataService;
@@ -20,13 +21,13 @@ public class AnnotationDrivenListener {
 
     @Async
     @EventListener
-    public void handleContextStart(CustomSpringEvent customSpringEvent) throws UserNotFoundException {
+    public void handleContextStart(CustomSpringEvent customSpringEvent) throws UserNotFoundException, PaymentMethodNotAllowedException {
 
         System.out.println("Success");
         UserData userData = userDataRepository.findByEmail(customSpringEvent.getDonationData().getStreamer()).orElseThrow(UserNotFoundException::new);
 
         while (userData.getEarned() >= 1000) {
-            userDataService.DeviedCashOut(userData.getEmail());
+            userDataService.cashOut(userData.getEmail());
         }
 
         System.out.println(Thread.currentThread().getName());

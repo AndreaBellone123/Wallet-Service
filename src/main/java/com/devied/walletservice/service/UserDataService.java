@@ -1,13 +1,12 @@
 package com.devied.walletservice.service;
 
 import com.devied.walletservice.data.UserData;
-import com.devied.walletservice.error.DuplicatePaymentMethodException;
-import com.devied.walletservice.error.PaymentMethodNotFoundException;
-import com.devied.walletservice.error.UserNotFoundException;
+import com.devied.walletservice.error.*;
 import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.util.UUID;
+import java.util.List;
 
 
 public interface UserDataService {
@@ -20,13 +19,13 @@ public interface UserDataService {
 
     User donate(String email, String sid, int amount) throws Exception;
 
-    void DeviedCashOut(String email) throws UserNotFoundException;
+    void cashOut(String email) throws UserNotFoundException, PaymentMethodNotAllowedException;
 
-    User createWallet(String name);
+    User createWallet(String name) throws SameUserException;
 
-    User addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException;
+    List<PaymentMethod> addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException;
 
-    User updateDefaultMethod(String id, PaymentMethod paymentMethod, String name) throws UserNotFoundException, DuplicatePaymentMethodException, PaymentMethodNotFoundException;
+    List<PaymentMethod> updateDefaultMethod(String id, PaymentMethod paymentMethod, String name) throws UserNotFoundException, DuplicatePaymentMethodException, PaymentMethodNotFoundException;
 
-    User deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException;
+    List<PaymentMethod> deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException;
 }

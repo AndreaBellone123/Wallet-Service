@@ -42,8 +42,7 @@ public class Carts {
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public Checkout initialCheckout(Authentication auth) throws Exception {
 
-        CartData cartData = cartDataService.findCurrent(auth.getName());
-        return paymentService.initialCheckout(auth.getName(), cartData);
+        return paymentService.initialCheckout(auth.getName());
     }
 
     @PatchMapping("/current/checkout")

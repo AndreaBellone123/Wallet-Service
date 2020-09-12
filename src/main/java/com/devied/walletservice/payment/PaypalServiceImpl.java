@@ -5,16 +5,14 @@ import com.devied.walletservice.data.CartData;
 import com.devied.walletservice.data.ProductData;
 import com.devied.walletservice.data.TransactionData;
 import com.devied.walletservice.data.UserData;
-import com.devied.walletservice.error.DuplicatePaymentMethodException;
-import com.devied.walletservice.error.PaypalUserNotFoundException;
-import com.devied.walletservice.error.ProductNotFoundException;
-import com.devied.walletservice.error.UserNotFoundException;
+import com.devied.walletservice.error.*;
 import com.devied.walletservice.model.Payout;
 import com.devied.walletservice.model.*;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.TransactionDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
 import com.devied.walletservice.service.CartDataService;
+import com.devied.walletservice.service.PaymentMethodService;
 import com.devied.walletservice.service.TransactionDataService;
 import com.devied.walletservice.util.Email;
 import com.devied.walletservice.util.PaypalParameters;
@@ -40,6 +38,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -64,6 +63,9 @@ public class PaypalServiceImpl implements PaypalService {
 
     @Autowired
     CartDataService cartDataService;
+
+    @Autowired
+    PaymentMethodService paymentMethodService;
 
     @Autowired
     TransactionDataService transactionDataService;
@@ -213,11 +215,12 @@ public class PaypalServiceImpl implements PaypalService {
 
     }
 
-    public User getUser(Token token, String username) throws UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
+    public User getUser(PaypalAccessToken paypalAccessToken, String username) throws UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
+
 
         String url = "https://api.sandbox.paypal.com/v1/identity/oauth2/userinfo?schema=paypalv1.1";
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token.getToken());
+        headers.setBearerAuth(paypalAccessToken.getToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity request = new HttpEntity(headers);
 
@@ -272,16 +275,22 @@ public class PaypalServiceImpl implements PaypalService {
         return userConverter.convert(userData);
     }
 
-    public void cashOut(String email) throws UserNotFoundException {
+    public void cashOut(String email) throws UserNotFoundException, PaymentMethodNotAllowedException {
 
         UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        int earned = userData.getEarned();
+        double cashoutMultiplierDouble = earned / 1000;
+        int cashoutMultiplierInt = (int) cashoutMultiplierDouble;
+        double cashoutAmount = 50.00 * cashoutMultiplierInt;
+
         List<PaymentMethod> paymentMethods = userData.getPaymentMethods();
+        PaymentMethod paymentMethod = paymentMethodService.getPayOutMethod(email);
         PaypalMethod paypalMethod = null;
-        for (PaymentMethod paymentMethod : paymentMethods) {
-            if (paymentMethod.getMethod().equals("paypal")) {
-                paypalMethod = (PaypalMethod) paymentMethod;
-            }
+
+        if (!(paymentMethod.getMethod().equals("paypal"))) {
+            throw new PaymentMethodNotAllowedException();
         }
+        paypalMethod = (PaypalMethod) paymentMethod;
 
         final PaypalMethod finalPaypalMethod = paypalMethod;
         List<PayoutItem> items = IntStream
@@ -292,7 +301,7 @@ public class PaypalServiceImpl implements PaypalService {
                         .receiver(finalPaypalMethod.getEmail())
                         .amount(new Currency()
                                 .currency("EUR")
-                                .value("50.00")))
+                                .value(String.format(Locale.US, "%.2f", cashoutAmount))))
                 .collect(Collectors.toList());
 
         CreatePayoutRequest request = new CreatePayoutRequest().senderBatchHeader(new SenderBatchHeader()

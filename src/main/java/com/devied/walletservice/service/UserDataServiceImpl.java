@@ -14,6 +14,7 @@ import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -104,7 +105,7 @@ public class UserDataServiceImpl implements UserDataService {
 
         if (donatingUser.getId().equals(streamingUser.getId())) {
 
-            throw new SameUserException();
+            throw new SameUserDonationException();
         }
 
         if (donatingUser.getBought() < amount) {
@@ -138,37 +139,69 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public void DeviedCashOut(String email) throws UserNotFoundException {
+    public void cashOut(String email) throws UserNotFoundException, PaymentMethodNotAllowedException {
+
+        // interfaccia PaymentService che ha cashOut, startCheckout, completeCheckout
+        // factory PaymentServiceFactory.create(String method) -> PaymentService
 
         //TODO controllo sul metodo di pagamento e sulla quantita' di token ricevuti dalle donazioni
-        paymentService.PaypalCashOut(email);
+        paymentService.cashOut(email);
         UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-        userData.setEarned(userData.getEarned() - 1000);
+        double cashoutMultiplierDouble = userData.getEarned() / 1000;
+        int cashoutMultiplierInt = (int) cashoutMultiplierDouble;
+        int cashoutAmount = 1000 * cashoutMultiplierInt;
+        userData.setEarned(userData.getEarned() - cashoutAmount);
         userDataRepository.save(userData);
 
     }
 
     @Override
-    public User createWallet(String name) {
+    public User createWallet(String name) throws SameUserException {
 
-        UserData userData = new UserData();
-        userData.setEmail(name);
-        return userConverter.convert(userData);
+        List<UserData> userDataList = userDataRepository.findAll();
+        for (UserData userData : userDataList){
+            if (userData.getEmail().equals(name)){
+                throw new SameUserException();
+            }
+        }
+        UserData newUserData = new UserData();
+        newUserData.setEmail(name);
+        userDataRepository.save(newUserData);
+
+        return userConverter.convert(newUserData);
     }
 
     @Override
-    public User addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException {
+    public List<PaymentMethod> addPaymentMethod(PaymentMethod prototype, String name) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException {
 
         UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
         List<PaymentMethod> paymentMethodList = userData.getPaymentMethods();
-        paymentMethod.setUuid(UUID.randomUUID().toString().replace("-",""));
-        paymentMethodList.add(paymentMethod);
+
+        if (!(prototype.getMethod().equals("paypal"))) {
+            throw new PaymentMethodNotFoundException();
+        }
+        PaypalMethod paypalMethod = (PaypalMethod) prototype;
+        paypalMethod.setUuid(UUID.randomUUID().toString().replace("-", ""));
+        paymentMethodList.add(paypalMethod);
+
+        userData.getPaymentMethods()
+                .stream()
+                .filter(paymentMethod -> !paymentMethod.getUuid().equals(paypalMethod.getUuid()))
+                .forEach(paymentMethod -> {
+                    if (paypalMethod.isPayInMethod() && paymentMethod.isPayInMethod()) {
+                        paymentMethod.setPayInMethod(!(paymentMethod.isPayInMethod()));
+                    }
+                    if (paypalMethod.isPayOutMethod() && paymentMethod.isPayOutMethod()) {
+                        paymentMethod.setPayOutMethod(!(paymentMethod.isPayOutMethod()));
+                    }
+                });
+
         userDataRepository.save(userData);
-        return userConverter.convert(userData);
+        return userData.getPaymentMethods();
     }
 
     @Override
-    public User updateDefaultMethod(String id, PaymentMethod prototype, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
+    public List<PaymentMethod> updateDefaultMethod(String id, PaymentMethod prototype, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
 
         UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
 
@@ -178,26 +211,30 @@ public class UserDataServiceImpl implements UserDataService {
                 .findFirst()
                 .orElseThrow(PaymentMethodNotFoundException::new);
 
-       found.setPayInMethod(prototype.isPayInMethod());
-       found.setPayOutMethod(prototype.isPayOutMethod());
+        found.setPayInMethod(prototype.isPayInMethod());
+        found.setPayOutMethod(prototype.isPayOutMethod());
 
         userData.getPaymentMethods()
                 .stream()
                 .filter(paymentMethod -> !paymentMethod.getUuid().equals(id))
                 .forEach(paymentMethod -> {
 
-                        paymentMethod.setPayInMethod(!(prototype.isPayInMethod()));
-                        paymentMethod.setPayOutMethod(!(prototype.isPayOutMethod()));
+                    if (prototype.isPayInMethod() && paymentMethod.isPayInMethod()) {
+                        paymentMethod.setPayInMethod(!(paymentMethod.isPayInMethod()));
+                    }
+                    if (prototype.isPayOutMethod() && paymentMethod.isPayOutMethod()) {
+                        paymentMethod.setPayOutMethod(!(paymentMethod.isPayOutMethod()));
+                    }
 
                 });
 
         userDataRepository.save(userData);
-        return userConverter.convert(userData);
+        return userData.getPaymentMethods();
 
     }
 
     @Override
-    public User deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
+    public List<PaymentMethod> deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
 
         UserData userData = findByEmail(name);
 
@@ -209,7 +246,7 @@ public class UserDataServiceImpl implements UserDataService {
 
                 userData.getPaymentMethods().remove(paymentMethod);
                 userDataRepository.save(userData);
-                return userConverter.convert(userData);
+                return userData.getPaymentMethods();
             }
         }
 

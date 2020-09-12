@@ -44,21 +44,24 @@ public class CartDataServiceImpl implements CartDataService {
     @Autowired
     UserDataService userDataService;
 
+    @Autowired
+    PaymentMethodService paymentMethodService;
+
     @Override
     public CartData findCurrent(String email) throws NoCartsAvailableException {
 
-       if (cartDataRepository.findTopByEmailOrderByDateDesc(email) == null ){
+       /*if (cartDataRepository.findTopByEmailOrderByDateDesc(email) == null ){
 
            throw new NoCartsAvailableException();
 
-       }
+       }*/
 
         return cartDataRepository.findTopByEmailOrderByDateDesc(email);
 
     }
 
     @Override
-    public CartData patchCurrent(String email, List<CartItem> cartItems, String paymentMethod) throws Exception {
+    public CartData patchCurrent(String email, List<CartItem> cartItems, PaymentMethod paymentMethod) throws Exception {
 
         CartData cartData = findCurrent(email); // Fixed null pointer exception
 
@@ -88,16 +91,22 @@ public class CartDataServiceImpl implements CartDataService {
         }
         UserData userData = userDataService.findByEmail(email);
 
-        for(PaymentMethod selectedPaymentMethod : userData.getPaymentMethods()){
-
-            if (selectedPaymentMethod.getUuid().equals(cartData.getPaymentMethod().getUuid())){
-
-                cartData.setPaymentMethod(selectedPaymentMethod);
+        if (paymentMethod != null) {
+            boolean found = false;
+            for (PaymentMethod selectedPaymentMethod : userData.getPaymentMethods()) {
+                if (selectedPaymentMethod.getUuid().equals(paymentMethod.getUuid())) {
+                    cartData.setPaymentMethod(selectedPaymentMethod);
+                    found = true;
+                    break;
+                }
             }
 
-            else {
-
+            if (!found) {
                 throw new PaymentMethodNotFoundException();
+            }
+        } else {
+            if (cartData.getPaymentMethod() == null) {
+                cartData.setPaymentMethod(paymentMethodService.getPayInMethod(email));
             }
         }
 

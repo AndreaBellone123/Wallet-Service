@@ -1,13 +1,11 @@
 package com.devied.walletservice.payment;
 
 import com.devied.walletservice.data.CartData;
-import com.devied.walletservice.error.DuplicatePaymentMethodException;
-import com.devied.walletservice.error.PaymentMethodNotFoundException;
-import com.devied.walletservice.error.PaypalUserNotFoundException;
-import com.devied.walletservice.error.UserNotFoundException;
+import com.devied.walletservice.error.*;
 import com.devied.walletservice.model.Checkout;
-import com.devied.walletservice.model.Token;
+import com.devied.walletservice.model.PaypalAccessToken;
 import com.devied.walletservice.model.User;
+import com.devied.walletservice.service.CartDataService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,14 +18,16 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     PaypalService paypalService;
+    @Autowired
+    CartDataService cartDataService;
 
     @Override
-    public Checkout initialCheckout(String name, CartData cartData) throws Exception {
-
-        if (cartData.getPaymentMethod().equals("paypal")){
+    public Checkout initialCheckout(String name) throws Exception {
+        CartData cartData = cartDataService.findCurrent(name);
+        if (cartData.getPaymentMethod().getMethod().equals("paypal")){
             return paypalService.initialCheckout(name, cartData);
 
-        } else if (cartData.getPaymentMethod().equals("axerve")){
+        } else if (cartData.getPaymentMethod().getMethod().equals("axerve")){
             return null;//TODO axerveService.initialCheckout(name, cartData);
         }else
             throw new PaymentMethodNotFoundException();
@@ -35,23 +35,23 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public void completeCheckout(String name, Checkout checkout, CartData cartData) throws Exception {
-        if (cartData.getPaymentMethod().equals("paypal")){
+        if (cartData.getPaymentMethod().getMethod().equals("paypal")){
                 paypalService.completeCheckout(name, checkout);
 
-        } else if (cartData.getPaymentMethod().equals("axerve")){
+        } else if (cartData.getPaymentMethod().getMethod().equals("axerve")){
             //TODO axerveService.completeCheckout(name, checkout);
         }else
             throw new PaymentMethodNotFoundException();
     }
 
     @Override
-    public User getPaypalUser(Token token, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
+    public User getPaypalUser(PaypalAccessToken paypalAccessToken, String email) throws JsonProcessingException, UserNotFoundException, PaypalUserNotFoundException, DuplicatePaymentMethodException {
 
-        return paypalService.getUser(token, email);
+        return paypalService.getUser(paypalAccessToken, email);
     }
 
     @Override
-    public void PaypalCashOut(String email) throws UserNotFoundException {
+    public void cashOut(String email) throws UserNotFoundException, PaymentMethodNotAllowedException {
 
         paypalService.cashOut(email);
     }
