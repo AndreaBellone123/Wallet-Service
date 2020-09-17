@@ -4,6 +4,10 @@ spring:
     mongodb:
       uri: mongodb://localhost/wallet
 
+# SERVER PORT
+server:
+  port: 4000
+
 # IDENTITY
 keycloak:
   # `auth-server-url` must exactly match the issuer of the token
@@ -19,4 +23,5 @@ paypal:
   clientId : AVNSlr4OhE8kAJVt82ygsLq7yD64O8eYIwP2n1Q790DtcCzkE1-4uyfQrtR1u1Ysz_Hlaz7HdikaIFoQ
   secret: EK7hItd2kMKDv8zJ4-NFxSCk1myGYuP-JHXNj4SlqUGB42krSotKiHOm_jixeR9bjfp4TfCVu1k3PKbs
   mode : sandbox
+
 
