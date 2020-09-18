@@ -12,11 +12,9 @@ public class PaymentServiceFactory {
 
     public PaymentService create(String method) throws PaymentMethodNotAllowedException {
 
-        if("paypal".equals(method)){
+        if ("paypal".equals(method)) {
             return paypalService;
-        }
-
-        else {
+        } else {
             throw new PaymentMethodNotAllowedException();
         }
     }

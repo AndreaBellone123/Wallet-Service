@@ -8,9 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Transactional
 @Service
-public class PaymentMethodServiceImpl implements PaymentMethodService{
+public class PaymentMethodServiceImpl implements PaymentMethodService {
 
     @Autowired
     UserDataService userDataService;

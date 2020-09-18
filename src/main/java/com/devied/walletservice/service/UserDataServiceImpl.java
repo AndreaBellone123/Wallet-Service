@@ -10,7 +10,6 @@ import com.devied.walletservice.event.CustomSpringEvent;
 import com.devied.walletservice.model.PaymentMethod;
 import com.devied.walletservice.model.PaypalMethod;
 import com.devied.walletservice.model.User;
-import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.DonationDataRepository;
 import com.devied.walletservice.repository.ProductDataRepository;
 import com.devied.walletservice.repository.UserDataRepository;
@@ -152,8 +151,8 @@ public class UserDataServiceImpl implements UserDataService {
     public User createWallet(String name) throws SameUserException {
 
         List<UserData> userDataList = userDataRepository.findAll();
-        for (UserData userData : userDataList){
-            if (userData.getEmail().equals(name)){
+        for (UserData userData : userDataList) {
+            if (userData.getEmail().equals(name)) {
                 throw new SameUserException();
             }
         }

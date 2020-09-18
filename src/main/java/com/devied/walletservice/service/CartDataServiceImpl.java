@@ -10,7 +10,6 @@ import com.devied.walletservice.error.PaymentMethodNotFoundException;
 import com.devied.walletservice.model.CartItem;
 import com.devied.walletservice.model.Checkout;
 import com.devied.walletservice.model.PaymentMethod;
-import com.devied.walletservice.payment.PaymentService;
 import com.devied.walletservice.repository.CartDataRepository;
 import com.devied.walletservice.util.CartStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +73,7 @@ public class CartDataServiceImpl implements CartDataService {
 
         cartData.setItemsList(new ArrayList<>(itemsSet));
 
-        if(cartData.getItemsList().isEmpty()){
+        if (cartData.getItemsList().isEmpty()) {
 
             throw new EmptyCartException();
         }

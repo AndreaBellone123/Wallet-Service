@@ -6,7 +6,6 @@ import com.devied.walletservice.error.PaymentMethodNotAllowedException;
 import com.devied.walletservice.error.UserNotFoundException;
 import com.devied.walletservice.payment.PaymentServiceFactory;
 import com.devied.walletservice.repository.UserDataRepository;
-import com.devied.walletservice.service.CartDataService;
 import com.devied.walletservice.service.PaymentMethodService;
 import com.devied.walletservice.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;

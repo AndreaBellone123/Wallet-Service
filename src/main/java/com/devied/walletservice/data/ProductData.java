@@ -2,9 +2,9 @@ package com.devied.walletservice.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Locale;
 
 @Getter

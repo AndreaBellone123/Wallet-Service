@@ -1,8 +1,8 @@
 package com.devied.walletservice.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.Objects;
 
 @Getter

@@ -11,7 +11,7 @@ public class CustomSpringEvent extends ApplicationEvent {
 
     private DonationData donationData;
 
-    public CustomSpringEvent(Object source,DonationData donationData) {
+    public CustomSpringEvent(Object source, DonationData donationData) {
         super(source);
         this.donationData = donationData;
     }

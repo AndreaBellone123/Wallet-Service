@@ -12,7 +12,7 @@ public class ErrorEntity {
     private String code;
     private String message;
 
-    public ErrorEntity(String code,String message){
+    public ErrorEntity(String code, String message) {
 
         this.code = code;
         this.message = message;

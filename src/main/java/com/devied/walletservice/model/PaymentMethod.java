@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.UUID;
 
 @Getter
@@ -24,6 +25,6 @@ public class PaymentMethod {
     public PaymentMethod(String method) {
 
         this.method = method;
-        this.uuid = UUID.randomUUID().toString().replace("-","");
+        this.uuid = UUID.randomUUID().toString().replace("-", "");
     }
 }
