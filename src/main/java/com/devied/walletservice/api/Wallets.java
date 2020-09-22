@@ -43,21 +43,18 @@ public class Wallets {
         return userDataService.createWallet(auth.getName());
     }
 
-    @CrossOrigin(origins = "http://localhost:8000")
     @PostMapping(path = "/methods")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public List<PaymentMethod> addPaymentMethod(@RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException {
         return userDataService.addPaymentMethod(paymentMethod, auth.getName());
     }
 
-    @CrossOrigin(origins = "http://localhost:8000")
     @PatchMapping(path = "/methods/{id}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public List<PaymentMethod> updatePaymentMethod(@PathVariable(value = "id") String id, @RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, DuplicatePaymentMethodException {
         return userDataService.updateDefaultMethod(id, paymentMethod, auth.getName());
     }
 
-    @CrossOrigin(origins = "http://localhost:8000")
     @DeleteMapping(path = "/methods/{id}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public List<PaymentMethod> deletePaymentMethod(@PathVariable(value = "id") String id, Authentication authentication) throws UserNotFoundException, PaymentMethodNotFoundException {

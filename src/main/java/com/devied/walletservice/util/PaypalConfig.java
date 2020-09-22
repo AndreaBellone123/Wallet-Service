@@ -11,7 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 @Setter
-public class YAMLConfig {
+public class PaypalConfig {
+
+    @Value("${paypal.returnUrl}")
+    private String returnUrl;
+
+    @Value("${paypal.cancelUrl}")
+    private String cancelUrl;
 
     @Value("${paypal.clientId}")
     private String clientId;

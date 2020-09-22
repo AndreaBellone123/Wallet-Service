@@ -23,5 +23,16 @@ paypal:
   clientId: AVNSlr4OhE8kAJVt82ygsLq7yD64O8eYIwP2n1Q790DtcCzkE1-4uyfQrtR1u1Ysz_Hlaz7HdikaIFoQ
   secret: EK7hItd2kMKDv8zJ4-NFxSCk1myGYuP-JHXNj4SlqUGB42krSotKiHOm_jixeR9bjfp4TfCVu1k3PKbs
   mode: sandbox
+  cancelUrl: ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}/cancel
+  returnUrl: ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}/check
 
+
+# APP
+app:
+  api:
+    allowed-origins:
+      - ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}
+  signaling:
+    allowed-origins:
+      - ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}
 

@@ -14,9 +14,10 @@ import com.devied.walletservice.repository.UserDataRepository;
 import com.devied.walletservice.service.CartDataService;
 import com.devied.walletservice.service.PaymentMethodService;
 import com.devied.walletservice.service.TransactionDataService;
+import com.devied.walletservice.util.CartStatus;
 import com.devied.walletservice.util.Email;
 import com.devied.walletservice.util.PaypalParameters;
-import com.devied.walletservice.util.YAMLConfig;
+import com.devied.walletservice.util.PaypalConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
@@ -74,7 +75,7 @@ public class PaypalService implements PaymentService {
     ProductDataRepository productDataRepository;
 
     @Autowired
-    YAMLConfig yamlConfig;
+    PaypalConfig paypalConfig;
 
     public PaypalService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
@@ -96,8 +97,8 @@ public class PaypalService implements PaymentService {
     public RedirectUrls getRedirectURLs() {
 
         RedirectUrls redirectUrls = new RedirectUrls();
-        redirectUrls.setCancelUrl("http://localhost:8080/paypal_html/cancel.html");
-        redirectUrls.setReturnUrl("http://localhost:8080/paypal_html/review_payment.html");
+        redirectUrls.setCancelUrl(paypalConfig.getCancelUrl());
+        redirectUrls.setReturnUrl(paypalConfig.getReturnUrl());
 
         return redirectUrls;
 
@@ -111,7 +112,7 @@ public class PaypalService implements PaymentService {
         details.setSubtotal(orderDetail.setSubtotal());
         details.setTax(orderDetail.setTax());
         Amount amount = new Amount();
-        amount.setCurrency("EUR");
+        amount.setCurrency(orderDetail.getCurrency());
         amount.setTotal(orderDetail.formatTotal());
         System.out.print(amount.getTotal());
         amount.setDetails(details);
@@ -158,13 +159,19 @@ public class PaypalService implements PaymentService {
     }
 
     public Payment getPaymentDetails(String paymentId) throws PayPalRESTException {
-        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
+        APIContext apiContext = new APIContext(paypalConfig.getClientId(), paypalConfig.getSecret(), paypalConfig.getMode());
         return Payment.get(apiContext, paymentId);
     }
 
     @Override
     public Checkout initialCheckout(String name) throws Exception {
+
+
         CartData cartData = cartDataService.findCurrent(name);
+
+        if(!(cartData.getStatus().equals(CartStatus.Prepared))){
+            throw new CartInForbiddenStatusException();
+        }
         cartDataService.updateState(cartData);
 
         Payer payer = getPayerInformation(name);
@@ -176,7 +183,7 @@ public class PaypalService implements PaymentService {
         requestPayment.setRedirectUrls(redirectUrls);
         requestPayment.setPayer(payer);
         requestPayment.setIntent("authorize");
-        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
+        APIContext apiContext = new APIContext(paypalConfig.getClientId(), paypalConfig.getSecret(), paypalConfig.getMode());
         Payment approvedPayment = null;
 
         try {
@@ -198,7 +205,13 @@ public class PaypalService implements PaymentService {
     }
 
     @Override
-    public void completeCheckout(CartData cartData, Checkout checkout) throws Exception {
+    public void completeCheckout(String name, Checkout checkout) throws Exception {
+
+        CartData cartData = cartDataService.findCurrent(name);
+
+        if(!(cartData.getStatus().equals(CartStatus.Pending.name()))){
+            throw new CartInForbiddenStatusException();
+        }
 
         ObjectMapper mapper = new ObjectMapper();
         PaypalParameters params = mapper.convertValue(checkout.getParameters(), PaypalParameters.class);
@@ -207,7 +220,7 @@ public class PaypalService implements PaymentService {
 
         Payment payment = new Payment().setId(params.getPaymentId());
 
-        APIContext apiContext = new APIContext(yamlConfig.getClientId(), yamlConfig.getSecret(), yamlConfig.getMode());
+        APIContext apiContext = new APIContext(paypalConfig.getClientId(), paypalConfig.getSecret(), paypalConfig.getMode());
 
         payment.execute(apiContext, paymentExecution);
 

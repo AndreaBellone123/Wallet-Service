@@ -29,7 +29,6 @@ public class Carts {
     @Autowired
     PaymentMethodService paymentMethodService;
 
-    @CrossOrigin(origins = "http://localhost:8000")
     @GetMapping("/current")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public Cart getCurrentCart(Authentication auth) throws NoCartsAvailableException {
@@ -37,7 +36,6 @@ public class Carts {
         return cartConverter.convert(cartDataService.findCurrent(auth.getName()));
     }
 
-    @CrossOrigin(origins = "http://localhost:8000")
     @PatchMapping("/current")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public Cart updateCart(Authentication auth, @RequestBody Cart updatedCart) throws Exception {
@@ -45,7 +43,6 @@ public class Carts {
         return cartConverter.convert(cartDataService.patchCurrent(auth.getName(), updatedCart.getItemsList(), updatedCart.getPaymentMethod()));
     }
 
-    @CrossOrigin(origins = "http://localhost:8000")
     @PostMapping("/current/checkout")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public Checkout initialCheckout(Authentication auth) throws Exception {
@@ -53,12 +50,11 @@ public class Carts {
         return paymentServiceFactory.create(paymentMethodService.getPayInMethod(auth.getName()).getMethod()).initialCheckout(auth.getName());
     }
 
-    @CrossOrigin(origins = "http://localhost:8000")
     @PatchMapping("/current/checkout")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public void completeCheckout(@RequestBody Checkout checkout, Authentication auth) throws Exception {
 
-        paymentServiceFactory.create(paymentMethodService.getPayInMethod(auth.getName()).getMethod()).completeCheckout(cartDataService.findCurrent(auth.getName()), checkout);
+        paymentServiceFactory.create(paymentMethodService.getPayInMethod(auth.getName()).getMethod()).completeCheckout(auth.getName(), checkout);
         cartDataService.checkoutCurrent(checkout, auth.getName());
 
     }

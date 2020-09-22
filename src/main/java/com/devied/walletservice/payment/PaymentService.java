@@ -18,5 +18,5 @@ public interface PaymentService {
 
     void cashOut(String email) throws UserNotFoundException, PaymentMethodNotAllowedException;
 
-    void completeCheckout(CartData cartData, Checkout checkout) throws Exception;
+    void completeCheckout(String name, Checkout checkout) throws Exception;
 }

@@ -46,11 +46,11 @@ public class CartDataServiceImpl implements CartDataService {
     @Override
     public CartData findCurrent(String email) throws NoCartsAvailableException {
 
-       /*if (cartDataRepository.findTopByEmailOrderByDateDesc(email) == null ){
+        if (cartDataRepository.findTopByEmailOrderByDateDesc(email) == null) {
 
-           throw new NoCartsAvailableException();
+            throw new NoCartsAvailableException();
 
-       }*/
+        }
 
         return cartDataRepository.findTopByEmailOrderByDateDesc(email);
 
@@ -59,8 +59,12 @@ public class CartDataServiceImpl implements CartDataService {
     @Override
     public CartData patchCurrent(String email, List<CartItem> cartItems, PaymentMethod paymentMethod) throws Exception {
 
-        CartData cartData = findCurrent(email); // Fixed null pointer exception
-
+        CartData cartData = null;
+        try {
+            cartData = findCurrent(email); // Fixed null pointer exception
+        } catch (NoCartsAvailableException ex) {
+            //DO NOTHING
+        }
         if (cartData == null) {
 
             cartData = new CartData();
