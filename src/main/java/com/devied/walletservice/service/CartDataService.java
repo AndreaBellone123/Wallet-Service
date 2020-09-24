@@ -12,6 +12,8 @@ public interface CartDataService {
 
     CartData findCurrent(String email) throws NoCartsAvailableException;
 
+    void deleteCurrent(String email) throws NoCartsAvailableException;
+
     CartData patchCurrent(String email, List<CartItem> cartItems, PaymentMethod paymentMethod) throws Exception;
 
     void emptyCart(String email, Checkout checkout) throws Exception;

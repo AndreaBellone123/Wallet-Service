@@ -164,17 +164,19 @@ public class PaypalService implements PaymentService {
     }
 
     @Override
-    public Checkout initialCheckout(String name) throws Exception {
+    public Checkout initialCheckout(String email) throws Exception {
+        if(email == null){
+            throw new UserUnauthorizedException();
+        }
 
-
-        CartData cartData = cartDataService.findCurrent(name);
+        CartData cartData = cartDataService.findCurrent(email);
 
         if(!(cartData.getStatus().equals(CartStatus.Prepared))){
             throw new CartInForbiddenStatusException();
         }
         cartDataService.updateState(cartData);
 
-        Payer payer = getPayerInformation(name);
+        Payer payer = getPayerInformation(email);
         RedirectUrls redirectUrls = getRedirectURLs();
         List<Transaction> listTransaction = getTransactionInformation(cartData);
 
@@ -199,7 +201,7 @@ public class PaypalService implements PaymentService {
         assert approvedPayment != null;
 
         checkout.setUrl(getApprovalLink(approvedPayment));
-        transactionDataService.createTransaction(checkout.getUrl(), name);
+        transactionDataService.createTransaction(checkout.getUrl(), email);
 
         return checkout;
     }

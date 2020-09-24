@@ -57,6 +57,18 @@ public class CartDataServiceImpl implements CartDataService {
     }
 
     @Override
+    public void deleteCurrent(String email) throws NoCartsAvailableException {
+
+        if (cartDataRepository.findTopByEmailOrderByDateDesc(email) == null) {
+
+            throw new NoCartsAvailableException();
+
+        }
+        CartData cartData = findCurrent(email);
+        cartDataRepository.delete(cartData);
+    }
+
+    @Override
     public CartData patchCurrent(String email, List<CartItem> cartItems, PaymentMethod paymentMethod) throws Exception {
 
         CartData cartData = null;

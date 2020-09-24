@@ -19,7 +19,8 @@ public enum Error {
     err_204("Duplicate Payment Method", 400),
     err_205("Empty Cart", 400),
     err_206("User Already Exists", 400),
-    err_207("Unsuppported Payment Method", 400);
+    err_207("Unsuppported Payment Method", 400),
+    err_301("User Not Logged in", 401);
 
     private final String message;
     private final int code;

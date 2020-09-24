@@ -39,25 +39,25 @@ public class Wallets {
 
     @PostMapping
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User createWallet(Authentication auth) throws SameUserException {
+    public User createWallet(Authentication auth) throws SameUserException, UserUnauthorizedException {
         return userDataService.createWallet(auth.getName());
     }
 
     @PostMapping(path = "/methods")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public List<PaymentMethod> addPaymentMethod(@RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException {
+    public List<PaymentMethod> addPaymentMethod(@RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException, UserUnauthorizedException {
         return userDataService.addPaymentMethod(paymentMethod, auth.getName());
     }
 
     @PatchMapping(path = "/methods/{id}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public List<PaymentMethod> updatePaymentMethod(@PathVariable(value = "id") String id, @RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, DuplicatePaymentMethodException {
+    public List<PaymentMethod> updatePaymentMethod(@PathVariable(value = "id") String id, @RequestBody PaymentMethod paymentMethod, Authentication auth) throws UserNotFoundException, PaymentMethodNotFoundException, DuplicatePaymentMethodException, UserUnauthorizedException {
         return userDataService.updateDefaultMethod(id, paymentMethod, auth.getName());
     }
 
     @DeleteMapping(path = "/methods/{id}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public List<PaymentMethod> deletePaymentMethod(@PathVariable(value = "id") String id, Authentication authentication) throws UserNotFoundException, PaymentMethodNotFoundException {
+    public List<PaymentMethod> deletePaymentMethod(@PathVariable(value = "id") String id, Authentication authentication) throws UserNotFoundException, PaymentMethodNotFoundException, UserUnauthorizedException {
         return userDataService.deletePaymentMethod(id, authentication.getName());
     }
 }

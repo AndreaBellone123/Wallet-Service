@@ -43,6 +43,13 @@ public class Carts {
         return cartConverter.convert(cartDataService.patchCurrent(auth.getName(), updatedCart.getItemsList(), updatedCart.getPaymentMethod()));
     }
 
+    @DeleteMapping("/current")
+    @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
+    public void deleteCurrentCart(Authentication auth) throws NoCartsAvailableException {
+
+        cartDataService.deleteCurrent(auth.getName());
+    }
+
     @PostMapping("/current/checkout")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
     public Checkout initialCheckout(Authentication auth) throws Exception {

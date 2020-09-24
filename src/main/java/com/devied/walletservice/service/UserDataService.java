@@ -21,11 +21,11 @@ public interface UserDataService {
 
     void cashOut(String email) throws UserNotFoundException, PaymentMethodNotAllowedException;
 
-    User createWallet(String name) throws SameUserException;
+    User createWallet(String name) throws SameUserException, UserUnauthorizedException;
 
-    List<PaymentMethod> addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException;
+    List<PaymentMethod> addPaymentMethod(PaymentMethod paymentMethod, String name) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException, UserUnauthorizedException;
 
-    List<PaymentMethod> updateDefaultMethod(String id, PaymentMethod paymentMethod, String name) throws UserNotFoundException, DuplicatePaymentMethodException, PaymentMethodNotFoundException;
+    List<PaymentMethod> updateDefaultMethod(String id, PaymentMethod paymentMethod, String name) throws UserNotFoundException, DuplicatePaymentMethodException, PaymentMethodNotFoundException, UserUnauthorizedException;
 
-    List<PaymentMethod> deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException;
+    List<PaymentMethod> deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException, UserUnauthorizedException;
 }

@@ -16,10 +16,10 @@ public class Donations {
     @Autowired
     UserDataService userDataService;
 
-    @PatchMapping("/{sid}")
+    @PatchMapping("/{email:.*}")
     @Secured({IdentityRole.AUTHORITY_USER, IdentityRole.AUTHORITY_ADMIN})
-    public User donate(Authentication auth, @PathVariable(value = "sid") String sid, @RequestBody Donation donation) throws Exception {
-        return userDataService.donate(auth.getName(), sid, donation.getAmount());
+    public User donate(Authentication auth, @PathVariable(value = "email") String email, @RequestBody Donation donation) throws Exception {
+        return userDataService.donate(auth.getName(), email, donation.getAmount());
     }
 
 

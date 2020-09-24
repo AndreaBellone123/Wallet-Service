@@ -57,6 +57,10 @@ public class UserDataServiceImpl implements UserDataService {
     @Override
     public void updateWallet(String email) throws Exception {
 
+        if(email == null){
+            throw new UserUnauthorizedException();
+        }
+
         UserData userData = findByEmail(email);
         CartData cartData = cartDataService.findCurrent(email);
 
@@ -69,6 +73,10 @@ public class UserDataServiceImpl implements UserDataService {
     @Override
     public User getWallet(String email) throws Exception {
 
+        if(email.equals("")){
+            throw new UserUnauthorizedException();
+        }
+
         UserData userData = findByEmail(email);
 
         if (userData == null) {
@@ -79,18 +87,17 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public User donate(String email, String sid, int amount) throws Exception {
+    public User donate(String donorEmail, String streamerEmail, int amount) throws Exception {
 
-        UserData donatingUser = findByEmail(email);
-
-        UserData streamingUser = findByEmail(sid);
-
-        if (donatingUser.getTotal() < amount) {
-
-            throw new InsufficientFundsException();
+        if(donorEmail == null){
+            throw new UserUnauthorizedException();
         }
 
-        if (userDataRepository.findByEmail(sid) == null) {
+        UserData donatingUser = findByEmail(donorEmail);
+
+        UserData streamingUser = findByEmail(streamerEmail);
+
+        if (userDataRepository.findByEmail(streamerEmail) == null) {
 
             throw new UserNotFoundException();
         }
@@ -109,12 +116,12 @@ public class UserDataServiceImpl implements UserDataService {
 
             throw new InsufficientFundsException();
 
-        } else {
-
-            streamingUser.setEarned(streamingUser.getEarned() + amount);
-
-            donatingUser.setBought(donatingUser.getBought() - amount);
         }
+
+        streamingUser.setEarned(streamingUser.getEarned() + amount);
+
+        donatingUser.setBought(donatingUser.getBought() - amount);
+
 
         userDataRepository.save(streamingUser);
 
@@ -148,25 +155,29 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public User createWallet(String name) throws SameUserException {
-
+    public User createWallet(String email) throws SameUserException, UserUnauthorizedException {
+        if(email == null){
+            throw new UserUnauthorizedException();
+        }
         List<UserData> userDataList = userDataRepository.findAll();
         for (UserData userData : userDataList) {
-            if (userData.getEmail().equals(name)) {
+            if (userData.getEmail().equals(email)) {
                 throw new SameUserException();
             }
         }
         UserData newUserData = new UserData();
-        newUserData.setEmail(name);
+        newUserData.setEmail(email);
         userDataRepository.save(newUserData);
 
         return userConverter.convert(newUserData);
     }
 
     @Override
-    public List<PaymentMethod> addPaymentMethod(PaymentMethod prototype, String name) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException {
-
-        UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
+    public List<PaymentMethod> addPaymentMethod(PaymentMethod prototype, String email) throws UserNotFoundException, PaymentMethodNotFoundException, JsonProcessingException, UserUnauthorizedException {
+        if(email == null){
+            throw new UserUnauthorizedException();
+        }
+        UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         List<PaymentMethod> paymentMethodList = userData.getPaymentMethods();
 
         if (!(prototype.getMethod().equals("paypal"))) {
@@ -193,9 +204,13 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public List<PaymentMethod> updateDefaultMethod(String id, PaymentMethod prototype, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
+    public List<PaymentMethod> updateDefaultMethod(String id, PaymentMethod prototype, String email) throws UserNotFoundException, PaymentMethodNotFoundException, UserUnauthorizedException {
 
-        UserData userData = userDataRepository.findByEmail(name).orElseThrow(UserNotFoundException::new);
+        if(email == null){
+            throw new UserUnauthorizedException();
+        }
+
+        UserData userData = userDataRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
         PaymentMethod found = userData.getPaymentMethods()
                 .stream()
@@ -226,9 +241,13 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public List<PaymentMethod> deletePaymentMethod(String id, String name) throws UserNotFoundException, PaymentMethodNotFoundException {
+    public List<PaymentMethod> deletePaymentMethod(String id, String email) throws UserNotFoundException, PaymentMethodNotFoundException, UserUnauthorizedException {
 
-        UserData userData = findByEmail(name);
+        if(email == null){
+            throw new UserUnauthorizedException();
+        }
+
+        UserData userData = findByEmail(email);
 
         List<PaymentMethod> paymentMethods = userData.getPaymentMethods();
 
