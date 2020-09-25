@@ -9,7 +9,7 @@ public class Product {
 
     private String id;
     private String name;
-    private double discount;
+    private int bonusTokens;
     private int amount;
     private double price;
 }

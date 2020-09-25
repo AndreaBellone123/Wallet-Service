@@ -25,7 +25,7 @@ public class ProductDataServiceImpl implements ProductDataService {
 
         ProductData productData1 = new ProductData();
         productData1.setName(productData.getName());
-        productData1.setDiscount(productData.getDiscount());
+        productData1.setBonusTokens(productData.getBonusTokens());
         productData1.setAmount(productData.getAmount());
         productData1.setPrice(productData.getPrice());
         productDataRepository.insert(productData1);
@@ -36,7 +36,7 @@ public class ProductDataServiceImpl implements ProductDataService {
     @Override
     public Product updateProduct(String pid, ProductData productData, String email) throws Exception {
         ProductData productData1 = productDataRepository.findById(pid).orElseThrow(() -> new Exception("No Products Found"));
-        productData1.setDiscount(productData.getDiscount());
+        productData1.setBonusTokens(productData.getBonusTokens());
         productData1.setName(productData.getName());
         productData1.setPrice(productData.getPrice());
         productData1.setAmount(productData.getAmount());

@@ -13,7 +13,7 @@ public class ProductConverterImpl implements ProductConverter {
 
         Product product = new Product();
         product.setAmount(productData.getAmount());
-        product.setDiscount(productData.getDiscount());
+        product.setBonusTokens(productData.getBonusTokens());;
         product.setId(productData.getId());
         product.setName(productData.getName());
         product.setPrice(productData.getPrice());

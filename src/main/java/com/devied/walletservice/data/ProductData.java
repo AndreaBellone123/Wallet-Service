@@ -15,7 +15,7 @@ public class ProductData {
 
     private String id;
     private String name;
-    private double discount;
+    private int bonusTokens;
     private int amount;
     private double price;
     private int quantity;
