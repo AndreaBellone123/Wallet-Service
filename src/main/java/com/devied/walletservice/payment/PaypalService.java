@@ -211,7 +211,7 @@ public class PaypalService implements PaymentService {
 
         CartData cartData = cartDataService.findCurrent(name);
 
-        if(!(cartData.getStatus().equals(CartStatus.Pending.name()))){
+        if(!(cartData.getStatus().equals(CartStatus.Pending))){
             throw new CartInForbiddenStatusException();
         }
 

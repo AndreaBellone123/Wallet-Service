@@ -2,5 +2,5 @@ package com.devied.walletservice.util;
 
 public enum CartStatus {
 
-    Prepared, Pending, Completed
+    Prepared, Pending, Completed;
 }

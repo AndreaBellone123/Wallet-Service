@@ -1,5 +1,10 @@
 package com.devied.walletservice.service;
 
-public class DonationDataService {
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public interface DonationDataService {
 
 }
