@@ -10,8 +10,8 @@ server:
 
 # IDENTITY
 keycloak:
-  # auth-server-url must exactly match the issuer of the token
-  auth-server-url: ${SERVICES_ACCOUNT_PUBLIC_URL:https://account.devied.com/%7D$%7BSERVICES_ACCOUNT_PATH:/auth%7D
+  # `auth-server-url` must exactly match the issuer of the token
+  auth-server-url: ${SERVICES_ACCOUNT_PUBLIC_URL:https://account.devied.com}${SERVICES_ACCOUNT_PATH:/auth}
   realm: ${SERVICES_ACCOUNT_REALM:devied}
   resource: ${SERVICES_ACCOUNT_CLIENT:wallet}
   bearer-only: ${SERVICES_ACCOUNT_BEARER:true}
@@ -23,15 +23,16 @@ paypal:
   clientId: AVNSlr4OhE8kAJVt82ygsLq7yD64O8eYIwP2n1Q790DtcCzkE1-4uyfQrtR1u1Ysz_Hlaz7HdikaIFoQ
   secret: EK7hItd2kMKDv8zJ4-NFxSCk1myGYuP-JHXNj4SlqUGB42krSotKiHOm_jixeR9bjfp4TfCVu1k3PKbs
   mode: sandbox
-  cancelUrl: ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com/%7D/cancel
-  returnUrl: ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com/%7D/check
+  cancelUrl: ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}/cancel
+  returnUrl: ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}/check
 
 
 # APP
 app:
   api:
     allowed-origins:
-      - ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com/%7D
+      - ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}
   signaling:
     allowed-origins:
-      - ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com/%7D
+      - ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}
+
