@@ -34,5 +34,5 @@ app:
       - ${SERVICES_LIVE_PUBLIC_URL:https://live.test.com}
   signaling:
     allowed-origins:
-      - ${SERVICES_LIVE_PUBLIC_URL:https://live.devied.com}
+      - ${SERVICES_LIVE_PUBLIC_URL:https://live.test.com}
 
